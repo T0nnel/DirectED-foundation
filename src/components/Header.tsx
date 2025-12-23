@@ -16,9 +16,9 @@ const navItems: NavItem[] = [
     href: "/what-we-do",
     children: [
       { label: "Our Programs", href: "/programs", description: "Training and development initiatives" },
-      { label: "Education & Skills", href: "/focus/education", description: "World-class educational opportunities" },
+      { label: "Education & Skills", href: "/focus/education-access", description: "World-class educational opportunities" },
       { label: "Youth Employment", href: "/focus/youth-employment", description: "Career development and placements" },
-      { label: "Technology & Innovation", href: "/focus/technology", description: "Tech skills for the future" },
+      { label: "Technology & Innovation", href: "/focus/technology-innovation", description: "Tech skills for the future" },
       { label: "Gender Equality", href: "/focus/gender-equality", description: "Women in tech initiatives" },
     ],
   },
@@ -47,7 +47,7 @@ const navItems: NavItem[] = [
       { label: "Our Mission", href: "/mission", description: "Vision and values" },
       { label: "Team", href: "/team", description: "Meet our people" },
       { label: "Partners", href: "/partners", description: "Organizations we work with" },
-      { label: "About Us", href: "/about", description: "Learn more about DirectED" },
+      { label: "About Us", href: "/about", description: "Learn more about DirectEd Development Foundation" },
     ],
   },
   {
@@ -103,7 +103,7 @@ export const Header = () => {
                 <span className="text-primary-foreground font-serif text-xl font-bold">D</span>
               </div>
               <div className="hidden sm:block">
-                <span className="text-xl font-serif font-bold text-primary">DirectEd</span>
+                <span className="text-xl font-serif font-bold text-primary">DirectED</span>
                 <p className="text-xs text-muted-foreground">Development Foundation</p>
               </div>
             </Link>

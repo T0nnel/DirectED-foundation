@@ -6,13 +6,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Eye, 
-  EyeOff, 
-  LogOut, 
+import {
+  Plus,
+  Edit,
+  Trash2,
+  Eye,
+  EyeOff,
+  LogOut,
   Leaf,
   Home,
   FileText,
@@ -86,9 +86,9 @@ const Admin = () => {
   const togglePublish = async (id: string, currentStatus: boolean) => {
     const { error } = await supabase
       .from('program_listings')
-      .update({ 
+      .update({
         is_published: !currentStatus,
-        published_at: !currentStatus ? new Date().toISOString() : null 
+        published_at: !currentStatus ? new Date().toISOString() : null
       })
       .eq('id', id);
 
@@ -179,7 +179,7 @@ const Admin = () => {
           <div className="flex items-center gap-4">
             <Link to="/" className="flex items-center">
               <Leaf className="h-8 w-8 mr-2" />
-              <span className="font-serif text-xl font-bold">DirectEd Admin</span>
+              <span className="font-serif text-xl font-bold">DirectED Development Foundation Admin</span>
             </Link>
           </div>
           <div className="flex items-center gap-4">

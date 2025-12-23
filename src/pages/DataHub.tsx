@@ -61,7 +61,7 @@ const DataHub = () => {
                                 Data & Impact Statistics
                             </h1>
                             <p className="text-xl text-primary-foreground/90 leading-relaxed">
-                                Transparent, data-driven insights into DirectED's impact. Explore our key metrics,
+                                Transparent, data-driven insights into DirectEd Development Foundation's impact. Explore our key metrics,
                                 trends, and the tangible difference we're making in education and employment.
                             </p>
                         </motion.div>
@@ -77,8 +77,8 @@ const DataHub = () => {
                                     key={category.value}
                                     onClick={() => setSelectedCategory(category.value)}
                                     className={`px-4 py-2 rounded-lg transition-all ${selectedCategory === category.value
-                                            ? "bg-accent text-white"
-                                            : "bg-card text-foreground hover:bg-muted"
+                                        ? "bg-accent text-white"
+                                        : "bg-card text-foreground hover:bg-muted"
                                         }`}
                                 >
                                     {category.label}

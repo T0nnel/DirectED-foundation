@@ -112,7 +112,7 @@ const Team = () => {
                                 Executive Leadership
                             </h2>
                             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                                Visionary leaders guiding DirectED's mission and strategic direction
+                                Visionary leaders guiding DirectEd Development Foundation's mission and strategic direction
                             </p>
                             <div className="section-divider mt-6" />
                         </motion.div>

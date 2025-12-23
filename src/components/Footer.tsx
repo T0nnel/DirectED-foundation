@@ -5,9 +5,9 @@ export const Footer = () => {
   const footerLinks = {
     "What We Do": [
       { label: "Our Programs", href: "/programs" },
-      { label: "Education & Skills", href: "/focus/education" },
+      { label: "Education & Skills", href: "/focus/education-access" },
       { label: "Youth Employment", href: "/focus/youth-employment" },
-      { label: "Technology", href: "/focus/technology" },
+      { label: "Technology", href: "/focus/technology-innovation" },
     ],
     "Research & Reports": [
       { label: "Publications", href: "/publications" },
@@ -49,7 +49,7 @@ export const Footer = () => {
                 <span className="text-primary-foreground font-serif text-2xl font-bold">D</span>
               </div>
               <div>
-                <span className="text-2xl font-serif font-bold">DirectEd</span>
+                <span className="text-2xl font-serif font-bold">DirectED</span>
                 <p className="text-sm text-primary-foreground/70">Development Foundation</p>
               </div>
             </Link>

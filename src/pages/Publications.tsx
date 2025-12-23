@@ -58,7 +58,7 @@ const Publications = () => {
                             </h1>
                             <p className="text-xl text-primary-foreground/90 leading-relaxed">
                                 Explore our research, annual reports, case studies, and impact analyses documenting
-                                DirectED's work and the transformative power of education.
+                                DirectEd Development Foundation's work and the transformative power of education.
                             </p>
                         </motion.div>
                     </div>

@@ -131,7 +131,7 @@ const Index = () => {
 
         {/* News Section */}
         <NewsSection
-          title="DirectEd, for Every Learner"
+          title="DirectEd Development Foundation, for Every Learner"
           subtitle="Stay updated with our latest stories, research, and impact"
           cards={newsCards}
         />
@@ -152,7 +152,7 @@ const Index = () => {
                 Our Focus Areas
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Discover the key areas where DirectED is making an impact
+                Discover the key areas where DirectEd Development Foundation is making an impact
               </p>
               <div className="section-divider mt-6" />
             </motion.div>
@@ -162,7 +162,7 @@ const Index = () => {
                 {
                   title: "Education & Skills Development",
                   description: "World-class technology education unlocking potential",
-                  link: "/focus/education",
+                  link: "/focus/education-access",
                   icon: <GraduationCap className="w-8 h-8" />
                 },
                 {

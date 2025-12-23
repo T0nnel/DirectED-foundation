@@ -28,7 +28,7 @@ export const CTASection = ({
       {/* Background */}
       {backgroundImage ? (
         <>
-          <div 
+          <div
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: `url(${backgroundImage})` }}
           />
@@ -58,19 +58,19 @@ export const CTASection = ({
             {description}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              variant="accent" 
-              size="lg" 
+            <Button
+              variant="accent"
+              size="lg"
               className="text-lg px-8"
             >
               {primaryCta.label}
               <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
             {secondaryCta && (
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className="text-lg px-8 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
+              <Button
+                variant="outline"
+                size="lg"
+                className="text-lg px-8 border-primary-foreground/30 text-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
               >
                 {secondaryCta.label}
               </Button>

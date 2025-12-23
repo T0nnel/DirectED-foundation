@@ -31,7 +31,7 @@ After running the schema, you need to make yourself an admin:
 
 ```sql
 INSERT INTO public.user_profiles (user_id, role, full_name)
-VALUES ('YOUR-UUID-HERE', 'admin', 'Your Name')
+VALUES ('8443f444-ac57-427f-a0e4-044a8df2da19', 'admin', 'Your Name')
 ON CONFLICT (user_id) 
 DO UPDATE SET role = 'admin';
 ```

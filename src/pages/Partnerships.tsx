@@ -49,7 +49,7 @@ const Partnerships = () => {
                                 Our Partners
                             </h1>
                             <p className="text-xl text-primary-foreground/90 leading-relaxed">
-                                DirectED's impact is amplified through strategic partnerships with leading corporations,
+                                DirectEd Development Foundation's impact is amplified through strategic partnerships with leading corporations,
                                 educational institutions, nonprofits, and government agencies committed to transforming
                                 lives through education.
                             </p>
@@ -68,8 +68,8 @@ const Partnerships = () => {
                                         key={type.value}
                                         onClick={() => setSelectedType(type.value)}
                                         className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-all ${selectedType === type.value
-                                                ? "bg-accent text-white"
-                                                : "bg-card text-foreground hover:bg-muted"
+                                            ? "bg-accent text-white"
+                                            : "bg-card text-foreground hover:bg-muted"
                                             }`}
                                     >
                                         <Icon className="w-4 h-4" />
