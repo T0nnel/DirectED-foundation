@@ -16,18 +16,19 @@ const navItems: NavItem[] = [
     href: "/what-we-do",
     children: [
       { label: "Our Programs", href: "/programs", description: "Training and development initiatives" },
-      { label: "Education", href: "/education", description: "World-class educational opportunities" },
-      { label: "Technology", href: "/technology", description: "Tech skills for the future" },
-      { label: "Partnerships", href: "/partnerships", description: "Collaborate with us" },
+      { label: "Education & Skills", href: "/focus/education", description: "World-class educational opportunities" },
+      { label: "Youth Employment", href: "/focus/youth-employment", description: "Career development and placements" },
+      { label: "Technology & Innovation", href: "/focus/technology", description: "Tech skills for the future" },
+      { label: "Gender Equality", href: "/focus/gender-equality", description: "Women in tech initiatives" },
     ],
   },
   {
     label: "Research & Reports",
     href: "/research",
     children: [
-      { label: "Publications", href: "/publications", description: "Our latest research" },
+      { label: "Publications", href: "/publications", description: "Reports and research papers" },
       { label: "Data & Statistics", href: "/data", description: "Impact metrics and analytics" },
-      { label: "Annual Reports", href: "/annual-reports", description: "Yearly achievements" },
+      { label: "Annual Reports", href: "/publications", description: "Yearly achievements" },
     ],
   },
   {
@@ -36,7 +37,7 @@ const navItems: NavItem[] = [
     children: [
       { label: "Success Stories", href: "/success-stories", description: "Transformative journeys" },
       { label: "Blog", href: "/blog", description: "Latest news and insights" },
-      { label: "Media Gallery", href: "/gallery", description: "Photos and videos" },
+      { label: "Impact Data", href: "/data", description: "See our impact in numbers" },
     ],
   },
   {
@@ -46,7 +47,7 @@ const navItems: NavItem[] = [
       { label: "Our Mission", href: "/mission", description: "Vision and values" },
       { label: "Team", href: "/team", description: "Meet our people" },
       { label: "Partners", href: "/partners", description: "Organizations we work with" },
-      { label: "Careers", href: "/careers", description: "Join our team" },
+      { label: "About Us", href: "/about", description: "Learn more about DirectED" },
     ],
   },
   {
@@ -55,7 +56,7 @@ const navItems: NavItem[] = [
     children: [
       { label: "Donate", href: "/donate", description: "Support our mission" },
       { label: "Volunteer", href: "/volunteer", description: "Give your time" },
-      { label: "Advocate", href: "/advocate", description: "Spread the word" },
+      { label: "Partner With Us", href: "/partnerships", description: "Collaborate for impact" },
     ],
   },
 ];
@@ -89,11 +90,10 @@ export const Header = () => {
 
       {/* Main Header */}
       <header
-        className={`sticky top-0 z-50 transition-all duration-300 ${
-          isScrolled
-            ? "bg-background/95 backdrop-blur-md shadow-soft"
-            : "bg-background"
-        }`}
+        className={`sticky top-0 z-50 transition-all duration-300 ${isScrolled
+          ? "bg-background/95 backdrop-blur-md shadow-soft"
+          : "bg-background"
+          }`}
       >
         <div className="container mx-auto px-6">
           <div className="flex items-center justify-between h-20">
@@ -159,12 +159,16 @@ export const Header = () => {
               <button className="p-2 hover:bg-muted rounded-full transition-colors">
                 <Search className="w-5 h-5 text-foreground" />
               </button>
-              <Button variant="outline" className="hidden md:inline-flex">
-                Press Centre
-              </Button>
-              <Button variant="accent" className="hidden sm:inline-flex">
-                Donate
-              </Button>
+              <Link to="/stories">
+                <Button variant="outline" className="hidden md:inline-flex">
+                  Press Centre
+                </Button>
+              </Link>
+              <Link to="/donate">
+                <Button variant="accent" className="hidden sm:inline-flex">
+                  Donate
+                </Button>
+              </Link>
               <button
                 onClick={() => setIsMobileMenuOpen(true)}
                 className="lg:hidden p-2 hover:bg-muted rounded-full transition-colors"
@@ -213,10 +217,9 @@ export const Header = () => {
                         className="w-full flex items-center justify-between py-2 text-lg font-medium"
                       >
                         {item.label}
-                        <ChevronDown 
-                          className={`w-5 h-5 transition-transform ${
-                            activeDropdown === item.label ? "rotate-180" : ""
-                          }`}
+                        <ChevronDown
+                          className={`w-5 h-5 transition-transform ${activeDropdown === item.label ? "rotate-180" : ""
+                            }`}
                         />
                       </button>
                       <AnimatePresence>
@@ -247,12 +250,16 @@ export const Header = () => {
                 </nav>
 
                 <div className="mt-8 space-y-3">
-                  <Button variant="accent" className="w-full" size="lg">
-                    Donate
-                  </Button>
-                  <Button variant="outline" className="w-full" size="lg">
-                    Press Centre
-                  </Button>
+                  <Link to="/donate" className="block">
+                    <Button variant="accent" className="w-full" size="lg">
+                      Donate
+                    </Button>
+                  </Link>
+                  <Link to="/stories" className="block">
+                    <Button variant="outline" className="w-full" size="lg">
+                      Press Centre
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </motion.div>

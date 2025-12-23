@@ -17,6 +17,11 @@ import AdminEdit from "./pages/AdminEdit";
 import Programs from "./pages/Programs";
 import ProgramDetail from "./pages/ProgramDetail";
 import NotFound from "./pages/NotFound";
+import FocusAreaDetail from "./pages/FocusAreaDetail";
+import Publications from "./pages/Publications";
+import Team from "./pages/Team";
+import Partnerships from "./pages/Partnerships";
+import DataHub from "./pages/DataHub";
 
 const queryClient = new QueryClient();
 
@@ -32,14 +37,18 @@ const App = () => (
                         <Route path="/what-we-do" element={<WhatWeDo />} />
                         <Route path="/programs" element={<Programs />} />
                         <Route path="/programs/:id" element={<ProgramDetail />} />
+                        <Route path="/focus/:slug" element={<FocusAreaDetail />} />
                         <Route path="/research" element={<Research />} />
-                        <Route path="/publications" element={<Research />} />
+                        <Route path="/publications" element={<Publications />} />
+                        <Route path="/data" element={<DataHub />} />
                         <Route path="/stories" element={<Stories />} />
                         <Route path="/success-stories" element={<Stories />} />
                         <Route path="/blog" element={<Stories />} />
                         <Route path="/about" element={<About />} />
                         <Route path="/mission" element={<About />} />
-                        <Route path="/team" element={<About />} />
+                        <Route path="/team" element={<Team />} />
+                        <Route path="/partners" element={<Partnerships />} />
+                        <Route path="/partnerships" element={<Partnerships />} />
                         <Route path="/take-action" element={<TakeAction />} />
                         <Route path="/donate" element={<TakeAction />} />
                         <Route path="/volunteer" element={<TakeAction />} />

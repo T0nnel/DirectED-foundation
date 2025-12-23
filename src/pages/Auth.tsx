@@ -13,14 +13,14 @@ import { useToast } from '@/hooks/use-toast';
 import { Eye, EyeOff, Leaf } from 'lucide-react';
 
 const loginSchema = z.object({
-  email: z.string().trim().email({ message: 'Invalid email address' }),
+  email: z.string().email({ message: 'Invalid email address' }),
   password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
 });
 
 const signUpSchema = z.object({
-  email: z.string().trim().email({ message: 'Invalid email address' }),
+  email: z.string().email({ message: 'Invalid email address' }),
   password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
-  fullName: z.string().trim().min(2, { message: 'Name must be at least 2 characters' }),
+  fullName: z.string().min(2, { message: 'Name must be at least 2 characters' }),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -43,11 +43,13 @@ const Auth = () => {
   const loginForm = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' },
+    mode: 'onChange',
   });
 
   const signUpForm = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
     defaultValues: { email: '', password: '', fullName: '' },
+    mode: 'onChange',
   });
 
   const handleLogin = async (data: LoginFormData) => {
@@ -129,7 +131,13 @@ const Auth = () => {
                       <FormItem>
                         <FormLabel>Email</FormLabel>
                         <FormControl>
-                          <Input placeholder="you@example.com" {...field} />
+                          <Input
+                            placeholder="you@example.com"
+                            type="email"
+                            disabled={isSubmitting}
+                            autoComplete="email"
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -146,6 +154,8 @@ const Auth = () => {
                             <Input
                               type={showPassword ? 'text' : 'password'}
                               placeholder="••••••••"
+                              disabled={isSubmitting}
+                              autoComplete="current-password"
                               {...field}
                             />
                             <button
@@ -176,7 +186,11 @@ const Auth = () => {
                       <FormItem>
                         <FormLabel>Full Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="John Doe" {...field} />
+                          <Input
+                            placeholder="John Doe"
+                            autoComplete="name"
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -189,7 +203,12 @@ const Auth = () => {
                       <FormItem>
                         <FormLabel>Email</FormLabel>
                         <FormControl>
-                          <Input placeholder="you@example.com" {...field} />
+                          <Input
+                            placeholder="you@example.com"
+                            type="email"
+                            autoComplete="email"
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -206,6 +225,7 @@ const Auth = () => {
                             <Input
                               type={showPassword ? 'text' : 'password'}
                               placeholder="••••••••"
+                              autoComplete="new-password"
                               {...field}
                             />
                             <button

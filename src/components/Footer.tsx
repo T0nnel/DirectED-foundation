@@ -3,10 +3,30 @@ import { Facebook, Twitter, Instagram, Linkedin, Youtube, Mail, MapPin, Phone } 
 
 export const Footer = () => {
   const footerLinks = {
-    "What We Do": ["Our Programs", "Education", "Technology", "Partnerships"],
-    "About Us": ["Our Mission", "Team", "Careers", "Press Centre"],
-    "Get Involved": ["Donate", "Volunteer", "Advocate", "Partner With Us"],
-    "Resources": ["Publications", "Data & Statistics", "Media Gallery", "FAQs"],
+    "What We Do": [
+      { label: "Our Programs", href: "/programs" },
+      { label: "Education & Skills", href: "/focus/education" },
+      { label: "Youth Employment", href: "/focus/youth-employment" },
+      { label: "Technology", href: "/focus/technology" },
+    ],
+    "Research & Reports": [
+      { label: "Publications", href: "/publications" },
+      { label: "Data & Statistics", href: "/data" },
+      { label: "Annual Reports", href: "/publications" },
+      { label: "Impact Stories", href: "/data" },
+    ],
+    "Who We Are": [
+      { label: "About Us", href: "/about" },
+      { label: "Our Mission", href: "/mission" },
+      { label: "Our Team", href: "/team" },
+      { label: "Partners", href: "/partners" },
+    ],
+    "Get Involved": [
+      { label: "Donate", href: "/donate" },
+      { label: "Volunteer", href: "/volunteer" },
+      { label: "Partner With Us", href: "/partnerships" },
+      { label: "Success Stories", href: "/success-stories" },
+    ],
   };
 
   const socialLinks = [
@@ -56,12 +76,12 @@ export const Footer = () => {
               <h4 className="font-serif font-semibold text-lg mb-4">{title}</h4>
               <ul className="space-y-3">
                 {links.map((link) => (
-                  <li key={link}>
+                  <li key={link.label}>
                     <Link
-                      to="#"
+                      to={link.href}
                       className="text-primary-foreground/70 hover:text-accent transition-colors text-sm"
                     >
-                      {link}
+                      {link.label}
                     </Link>
                   </li>
                 ))}

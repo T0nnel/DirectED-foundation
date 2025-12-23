@@ -4,8 +4,8 @@ import { StatsSection } from "@/components/StatsSection";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Target, Eye, Heart, Users, GraduationCap, Globe, Briefcase } from "lucide-react";
-import content1 from "@/assets/content-1.jpg";
-import content2 from "@/assets/content-2.jpg";
+import content1 from "@/assets/image4.jpg";
+import content2 from "@/assets/image8.jpg";
 
 const About = () => {
   const stats = [
@@ -24,7 +24,7 @@ const About = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      
+
       <main>
         {/* Hero Section */}
         <section className="bg-primary py-24">
@@ -68,12 +68,12 @@ const About = () => {
                   A World Where Potential Knows No Boundaries
                 </h2>
                 <p className="text-lg text-muted-foreground mb-6">
-                  We believe that every person deserves the opportunity to realize their full potential, 
-                  regardless of where they were born. Our vision is a world where talent, not geography, 
+                  We believe that every person deserves the opportunity to realize their full potential,
+                  regardless of where they were born. Our vision is a world where talent, not geography,
                   determines success.
                 </p>
                 <p className="text-lg text-muted-foreground">
-                  Through world-class education and direct connections to global opportunities, 
+                  Through world-class education and direct connections to global opportunities,
                   we're breaking down barriers and building bridges to brighter futures.
                 </p>
               </motion.div>

@@ -7,7 +7,7 @@ import { ContentSection } from "@/components/ContentSection";
 import { CTASection } from "@/components/CTASection";
 import { PartnersSection } from "@/components/PartnersSection";
 import { Users, GraduationCap, Globe, Briefcase } from "lucide-react";
-
+import { motion } from "framer-motion";
 // Import images
 import hero1 from "@/assets/image1.jpg";
 import hero2 from "@/assets/image2.jpg";
@@ -135,6 +135,74 @@ const Index = () => {
           subtitle="Stay updated with our latest stories, research, and impact"
           cards={newsCards}
         />
+
+        {/* Spotlight Section - Focus Areas */}
+        <section className="py-20 bg-background">
+          <div className="container mx-auto px-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <div className="inline-block px-4 py-1.5 bg-accent/10 rounded-full mb-6">
+                <span className="text-sm font-medium text-accent">Spotlight</span>
+              </div>
+              <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4">
+                Our Focus Areas
+              </h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Discover the key areas where DirectED is making an impact
+              </p>
+              <div className="section-divider mt-6" />
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[
+                {
+                  title: "Education & Skills Development",
+                  description: "World-class technology education unlocking potential",
+                  link: "/focus/education",
+                  icon: <GraduationCap className="w-8 h-8" />
+                },
+                {
+                  title: "Youth Employment",
+                  description: "Connecting talent with global opportunities",
+                  link: "/focus/youth-employment",
+                  icon: <Briefcase className="w-8 h-8" />
+                },
+                {
+                  title: "Gender Equality in Tech",
+                  description: "Promoting equal opportunities for women in tech",
+                  link: "/focus/gender-equality",
+                  icon: <Users className="w-8 h-8" />
+                }
+              ].map((area, index) => (
+                <motion.div
+                  key={area.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  className="bg-card rounded-2xl p-8 shadow-soft hover:shadow-elevated transition-all card-hover"
+                >
+                  <div className="w-16 h-16 rounded-xl bg-accent/10 flex items-center justify-center text-accent mb-6">
+                    {area.icon}
+                  </div>
+                  <h3 className="font-serif text-xl font-bold text-foreground mb-3">
+                    {area.title}
+                  </h3>
+                  <p className="text-muted-foreground mb-6">
+                    {area.description}
+                  </p>
+                  <a href={area.link} className="text-accent font-medium inline-flex items-center gap-2 hover:gap-3 transition-all">
+                    Explore <span>→</span>
+                  </a>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
 
         {/* Programs Section */}
         <ContentSection

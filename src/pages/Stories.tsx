@@ -2,9 +2,9 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { NewsSection } from "@/components/NewsSection";
 import { motion } from "framer-motion";
-import news1 from "@/assets/news-1.jpg";
-import news2 from "@/assets/news-2.jpg";
-import news3 from "@/assets/news-3.jpg";
+import news1 from "@/assets/image5.jpg";
+import news2 from "@/assets/image6.jpg";
+import news3 from "@/assets/image7.jpg";
 
 const Stories = () => {
   const allStories = [
@@ -67,7 +67,7 @@ const Stories = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      
+
       <main>
         {/* Hero Section */}
         <section className="bg-primary py-24">

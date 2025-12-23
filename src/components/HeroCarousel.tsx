@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 interface Slide {
   id: number;
@@ -22,7 +23,7 @@ export const HeroCarousel = ({ slides }: HeroCarouselProps) => {
 
   useEffect(() => {
     if (!isAutoPlaying) return;
-    
+
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 6000);
@@ -57,11 +58,11 @@ export const HeroCarousel = ({ slides }: HeroCarouselProps) => {
               transition={{ duration: 1.2, ease: "easeOut" }}
               className="absolute inset-0"
             >
-              <div 
+              <div
                 className="absolute inset-0 bg-cover bg-center"
                 style={{ backgroundImage: `url(${slide.image})` }}
               />
-              <motion.div 
+              <motion.div
                 initial={{ scale: 1 }}
                 animate={{ scale: 1.05 }}
                 transition={{ duration: 8, ease: "linear" }}
@@ -92,13 +93,15 @@ export const HeroCarousel = ({ slides }: HeroCarouselProps) => {
               <p className="text-lg md:text-xl text-primary-foreground/90 mb-8 max-w-2xl">
                 {slides[currentSlide].subtitle}
               </p>
-              <Button 
-                size="lg" 
-                variant="accent"
-                className="text-lg px-8 py-6"
-              >
-                {slides[currentSlide].cta}
-              </Button>
+              <Link to={slides[currentSlide].link}>
+                <Button
+                  size="lg"
+                  variant="accent"
+                  className="text-lg px-8 py-6"
+                >
+                  {slides[currentSlide].cta}
+                </Button>
+              </Link>
             </motion.div>
           </AnimatePresence>
         </div>
@@ -126,11 +129,10 @@ export const HeroCarousel = ({ slides }: HeroCarouselProps) => {
           <button
             key={index}
             onClick={() => goToSlide(index)}
-            className={`h-2 rounded-full transition-all duration-300 ${
-              index === currentSlide 
-                ? "w-12 bg-accent" 
-                : "w-2 bg-primary-foreground/40 hover:bg-primary-foreground/60"
-            }`}
+            className={`h-2 rounded-full transition-all duration-300 ${index === currentSlide
+              ? "w-12 bg-accent"
+              : "w-2 bg-primary-foreground/40 hover:bg-primary-foreground/60"
+              }`}
             aria-label={`Go to slide ${index + 1}`}
           />
         ))}

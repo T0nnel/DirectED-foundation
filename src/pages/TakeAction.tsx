@@ -4,7 +4,7 @@ import { CTASection } from "@/components/CTASection";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Heart, Users, Megaphone, Building, ArrowRight } from "lucide-react";
-import hero3 from "@/assets/hero-3.jpg";
+import hero3 from "@/assets/image8.jpg";
 
 const TakeAction = () => {
   const actions = [
@@ -37,7 +37,7 @@ const TakeAction = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      
+
       <main>
         {/* Hero Section */}
         <section className="bg-primary py-24">
@@ -52,7 +52,7 @@ const TakeAction = () => {
                 Take Action
               </h1>
               <p className="text-xl text-primary-foreground/80">
-                Join us in creating opportunities for Africa's next generation of tech leaders. 
+                Join us in creating opportunities for Africa's next generation of tech leaders.
                 There are many ways to make a difference.
               </p>
             </motion.div>
