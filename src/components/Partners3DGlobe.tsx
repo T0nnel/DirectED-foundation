@@ -99,18 +99,23 @@ export const Partners3DGlobe = ({ title, subtitle, partners }: Partners3DGlobePr
                                     transition={{ duration: 0.1 }}
                                 >
                                     <motion.div
-                                        className="bg-card rounded-2xl p-6 shadow-elevated border border-border/50 backdrop-blur-sm"
+                                        className="bg-card rounded-2xl p-6 shadow-elevated border-2 border-border/50 backdrop-blur-sm"
                                         whileHover={{
-                                            scale: 1.15,
-                                            boxShadow: "0 20px 60px -10px rgba(0,0,0,0.3)",
+                                            scale: 1.25,
+                                            boxShadow: "0 25px 70px -10px rgba(20,184,166,0.5)",
+                                            borderColor: "hsl(175 70% 50% / 0.8)",
                                             zIndex: 1000,
                                         }}
-                                        transition={{ duration: 0.3 }}
+                                        transition={{
+                                            type: "spring",
+                                            stiffness: 300,
+                                            damping: 20
+                                        }}
                                     >
                                         <img
                                             src={logoUrl}
                                             alt={partner.name}
-                                            className="h-16 w-auto object-contain transition-all duration-300"
+                                            className="h-16 w-auto object-contain"
                                         />
                                     </motion.div>
                                 </motion.div>
