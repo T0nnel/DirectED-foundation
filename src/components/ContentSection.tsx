@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ReactNode } from "react";
+import { ParallaxSection } from "@/components/ParallaxSection";
 
 interface ContentSectionProps {
   title: string;
@@ -63,24 +64,30 @@ export const ContentSection = ({
           </motion.div>
 
           {/* Image */}
-          <motion.div
-            initial={{ opacity: 0, x: isImageRight ? 40 : -40 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className={`relative ${isImageRight ? "" : "lg:order-1"}`}
-          >
-            <div className="relative">
-              <img
-                src={image}
-                alt={title}
-                className="w-full h-auto rounded-2xl shadow-elevated"
-              />
-              {/* Decorative elements */}
-              <div className="absolute -top-4 -right-4 w-24 h-24 bg-accent/20 rounded-full blur-2xl" />
-              <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-primary/10 rounded-full blur-2xl" />
-            </div>
-          </motion.div>
+          <ParallaxSection offset={30}>
+            <motion.div
+              initial={{ opacity: 0, x: isImageRight ? 40 : -40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className={`relative ${isImageRight ? "" : "lg:order-1"}`}
+            >
+              <motion.div
+                className="relative"
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.4 }}
+              >
+                <img
+                  src={image}
+                  alt={title}
+                  className="w-full h-auto rounded-2xl shadow-elevated hover:shadow-glow transition-shadow duration-500"
+                />
+                {/* Decorative elements */}
+                <div className="absolute -top-4 -right-4 w-24 h-24 bg-accent/20 rounded-full blur-2xl" />
+                <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-primary/10 rounded-full blur-2xl" />
+              </motion.div>
+            </motion.div>
+          </ParallaxSection>
         </div>
       </div>
     </section>

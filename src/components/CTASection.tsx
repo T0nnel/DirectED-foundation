@@ -1,6 +1,9 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { BackgroundBeams } from "@/components/BackgroundBeams";
+import { FloatingElements } from "@/components/FloatingElements";
+
 
 interface CTASectionProps {
   title: string;
@@ -38,9 +41,10 @@ export const CTASection = ({
         <div className="absolute inset-0 bg-primary" />
       )}
 
-      {/* Decorative Elements */}
-      <div className="absolute top-0 left-1/4 w-64 h-64 bg-accent/20 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-primary-foreground/5 rounded-full blur-3xl" />
+      {/* Animated Background Effects */}
+      <BackgroundBeams className="opacity-20" beamColor="hsl(175 70% 50%)" />
+      <FloatingElements count={6} className="opacity-30" />
+
 
       {/* Content */}
       <div className="relative container mx-auto px-6 text-center">
@@ -59,7 +63,7 @@ export const CTASection = ({
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
-              variant="accent"
+              variant="teal"
               size="lg"
               className="text-lg px-8"
             >
@@ -70,7 +74,7 @@ export const CTASection = ({
               <Button
                 variant="outline"
                 size="lg"
-                className="text-lg px-8 border-primary-foreground/30 text-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
+                className="text-lg px-8 bg-transparent border-[hsl(175_70%_50%)] text-primary-foreground hover:bg-[hsl(175_70%_50%/0.2)] hover:text-[hsl(175_70%_50%)]"
               >
                 {secondaryCta.label}
               </Button>

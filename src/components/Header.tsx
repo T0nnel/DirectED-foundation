@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Menu, X, Search, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import logoImage from "@/assets/Facebook profile-01.jpg";
+import { useTranslation } from "react-i18next";
 
 interface NavItem {
   label: string;
@@ -10,61 +12,81 @@ interface NavItem {
   children?: { label: string; href: string; description?: string }[];
 }
 
-const navItems: NavItem[] = [
-  {
-    label: "What We Do",
-    href: "/what-we-do",
-    children: [
-      { label: "Our Programs", href: "/programs", description: "Training and development initiatives" },
-      { label: "Education & Skills", href: "/focus/education-access", description: "World-class educational opportunities" },
-      { label: "Youth Employment", href: "/focus/youth-employment", description: "Career development and placements" },
-      { label: "Technology & Innovation", href: "/focus/technology-innovation", description: "Tech skills for the future" },
-      { label: "Gender Equality", href: "/focus/gender-equality", description: "Women in tech initiatives" },
-    ],
-  },
-  {
-    label: "Research & Reports",
-    href: "/research",
-    children: [
-      { label: "Publications", href: "/publications", description: "Reports and research papers" },
-      { label: "Data & Statistics", href: "/data", description: "Impact metrics and analytics" },
-      { label: "Annual Reports", href: "/publications", description: "Yearly achievements" },
-    ],
-  },
-  {
-    label: "Stories",
-    href: "/stories",
-    children: [
-      { label: "Success Stories", href: "/success-stories", description: "Transformative journeys" },
-      { label: "Blog", href: "/blog", description: "Latest news and insights" },
-      { label: "Impact Data", href: "/data", description: "See our impact in numbers" },
-    ],
-  },
-  {
-    label: "Who We Are",
-    href: "/about",
-    children: [
-      { label: "Our Mission", href: "/mission", description: "Vision and values" },
-      { label: "Team", href: "/team", description: "Meet our people" },
-      { label: "Partners", href: "/partners", description: "Organizations we work with" },
-      { label: "About Us", href: "/about", description: "Learn more about DirectEd Development Foundation" },
-    ],
-  },
-  {
-    label: "Take Action",
-    href: "/take-action",
-    children: [
-      { label: "Donate", href: "/donate", description: "Support our mission" },
-      { label: "Volunteer", href: "/volunteer", description: "Give your time" },
-      { label: "Partner With Us", href: "/partnerships", description: "Collaborate for impact" },
-    ],
-  },
-];
-
 export const Header = () => {
+  const { t, i18n } = useTranslation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
+
+  // Derive navItems from translations
+  const navItems: NavItem[] = [
+    {
+      label: t('nav.what_we_do', 'What We Do'),
+      href: "/what-we-do",
+      children: [
+        { label: t('nav.programs', "Our Programs"), href: "/programs", description: t('nav.programs_desc', "Training and development initiatives") },
+        { label: t('nav.education_skills', "Education & Skills"), href: "/focus/education-access", description: t('nav.education_desc', "World-class educational opportunities") },
+        { label: t('nav.youth_employment', "Youth Employment"), href: "/focus/youth-employment", description: t('nav.employment_desc', "Career development and placements") },
+        { label: t('nav.tech_innovation', "Technology & Innovation"), href: "/focus/technology-innovation", description: t('nav.tech_desc', "Tech skills for the future") },
+        { label: t('nav.gender_equality', "Gender Equality"), href: "/focus/gender-equality", description: t('nav.gender_desc', "Women in tech initiatives") },
+      ],
+    },
+    {
+      label: t('nav.research_reports', 'Research & Reports'),
+      href: "/research",
+      children: [
+        { label: t('nav.publications', "Publications"), href: "/publications", description: t('nav.reports_desc', "Reports and research papers") },
+        { label: t('nav.data_statistics', "Data & Statistics"), href: "/data", description: t('nav.impact_metrics', "Impact metrics and analytics") },
+        { label: t('nav.annual_reports', "Annual Reports"), href: "/publications", description: t('nav.yearly_achievements', "Yearly achievements") },
+      ],
+    },
+    {
+      label: t('nav.stories', 'Stories'),
+      href: "/stories",
+      children: [
+        { label: t('nav.success_stories', "Success Stories"), href: "/success-stories", description: t('nav.transformative_journeys', "Transformative journeys") },
+        { label: t('nav.blog', "Blog"), href: "/blog", description: t('nav.latest_news', "Latest news and insights") },
+        { label: t('nav.impact_data', "Impact Data"), href: "/data", description: t('nav.impact_numbers', "See our impact in numbers") },
+      ],
+    },
+    {
+      label: t('nav.who_we_are', 'Who We Are'),
+      href: "/about",
+      children: [
+        { label: t('nav.our_mission', "Our Mission"), href: "/mission", description: t('nav.vision_values', "Vision and values") },
+        { label: t('nav.team', "Team"), href: "/team", description: t('nav.meet_people', "Meet our people") },
+        { label: t('nav.partners', "Partners"), href: "/partners", description: t('nav.orgs_work_with', "Organizations we work with") },
+        { label: t('nav.about_us', "About Us"), href: "/about", description: t('nav.learn_more', "Learn more about DirectEd Development Foundation") },
+      ],
+    },
+    {
+      label: t('nav.take_action', 'Take Action'),
+      href: "/take-action",
+      children: [
+        { label: t('nav.donate', "Donate"), href: "/donate", description: t('nav.support_mission', "Support our mission") },
+        { label: t('nav.volunteer', "Volunteer"), href: "/volunteer", description: t('nav.give_time', "Give your time") },
+        { label: t('nav.partner_with_us', "Partner With Us"), href: "/partnerships", description: t('nav.collaborate', "Collaborate for impact") },
+      ],
+    },
+  ];
+
+  const languages = [
+    { code: "en", name: "English" },
+    { code: "fr", name: "Français" },
+    { code: "es", name: "Español" },
+    { code: "sw", name: "Kiswahili" },
+    { code: "ar", name: "العربية" },
+    { code: "pt", name: "Português" },
+  ];
+
+  const handleLanguageChange = (langCode: string) => {
+    i18n.changeLanguage(langCode);
+    setIsLanguageDropdownOpen(false);
+  };
+
+  // Get current language name for display
+  const currentLanguageName = languages.find(l => l.code === i18n.language)?.name || languages.find(l => l.code === i18n.language.split('-')[0])?.name || "English";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -75,16 +97,56 @@ export const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('[data-language-dropdown]')) {
+        setIsLanguageDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
+
   return (
     <>
       {/* Top bar */}
       <div className="bg-primary text-primary-foreground text-sm py-2">
         <div className="container mx-auto px-6 flex justify-end items-center gap-4">
-          <button className="flex items-center gap-1 hover:text-accent transition-colors">
-            <Globe className="w-4 h-4" />
-            <span>English</span>
-            <ChevronDown className="w-3 h-3" />
-          </button>
+          <div className="relative z-[60]" data-language-dropdown>
+            <button
+              onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
+              className="flex items-center gap-1 hover:text-accent transition-colors"
+            >
+              <Globe className="w-4 h-4" />
+              <span>{currentLanguageName}</span>
+              <ChevronDown className={`w-3 h-3 transition-transform ${isLanguageDropdownOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            <AnimatePresence>
+              {isLanguageDropdownOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute top-full right-0 mt-2 bg-card text-card-foreground rounded-lg shadow-elevated border border-border min-w-[160px] overflow-hidden z-[70]"
+                >
+                  {languages.map((lang) => (
+                    <button
+                      key={lang.code}
+                      onClick={() => handleLanguageChange(lang.code)}
+                      className={`w-full text-left px-4 py-2.5 hover:bg-accent hover:text-accent-foreground transition-colors ${i18n.language === lang.code ? 'bg-muted font-medium' : ''
+                        }`}
+                    >
+                      {lang.name}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </div>
 
@@ -99,9 +161,7 @@ export const Header = () => {
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-serif text-xl font-bold">D</span>
-              </div>
+              <img src={logoImage} alt="DirectED Logo" className="w-12 h-12 rounded-lg object-cover" />
               <div className="hidden sm:block">
                 <span className="text-xl font-serif font-bold text-primary">DirectED</span>
                 <p className="text-xs text-muted-foreground">Development Foundation</p>
@@ -159,14 +219,14 @@ export const Header = () => {
               <button className="p-2 hover:bg-muted rounded-full transition-colors">
                 <Search className="w-5 h-5 text-foreground" />
               </button>
-              <Link to="/stories">
+              <Link to="/contactus">
                 <Button variant="outline" className="hidden md:inline-flex">
-                  Press Centre
+                  {t('nav.press_centre', "Press Centre")}
                 </Button>
               </Link>
               <Link to="/donate">
                 <Button variant="accent" className="hidden sm:inline-flex">
-                  Donate
+                  {t('nav.donate', "Donate")}
                 </Button>
               </Link>
               <button
@@ -200,7 +260,7 @@ export const Header = () => {
             >
               <div className="p-6">
                 <div className="flex justify-between items-center mb-8">
-                  <span className="text-xl font-serif font-bold text-primary">Menu</span>
+                  <span className="text-xl font-serif font-bold text-primary">{t('nav.menu', "Menu")}</span>
                   <button
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="p-2 hover:bg-muted rounded-full transition-colors"
@@ -252,12 +312,12 @@ export const Header = () => {
                 <div className="mt-8 space-y-3">
                   <Link to="/donate" className="block">
                     <Button variant="accent" className="w-full" size="lg">
-                      Donate
+                      {t('nav.donate', "Donate")}
                     </Button>
                   </Link>
                   <Link to="/stories" className="block">
                     <Button variant="outline" className="w-full" size="lg">
-                      Press Centre
+                      {t('nav.press_centre', "Press Centre")}
                     </Button>
                   </Link>
                 </div>

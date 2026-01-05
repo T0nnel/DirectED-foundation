@@ -22,6 +22,7 @@ import Publications from "./pages/Publications";
 import Team from "./pages/Team";
 import Partnerships from "./pages/Partnerships";
 import DataHub from "./pages/DataHub";
+import ContactUs from "./pages/ContactUs";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +53,7 @@ const App = () => (
                         <Route path="/take-action" element={<TakeAction />} />
                         <Route path="/donate" element={<TakeAction />} />
                         <Route path="/volunteer" element={<TakeAction />} />
+                        <Route path="/contactus" element={<ContactUs />} />
                         <Route path="/auth" element={<Auth />} />
                         <Route path="/admin" element={<Admin />} />
                         <Route path="/admin/create" element={<AdminCreate />} />

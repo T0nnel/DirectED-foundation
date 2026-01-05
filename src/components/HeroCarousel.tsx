@@ -3,6 +3,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { BackgroundBeams } from "@/components/BackgroundBeams";
+import { SpotlightEffect } from "@/components/SpotlightEffect";
+import { FloatingElements } from "@/components/FloatingElements";
+
 
 interface Slide {
   id: number;
@@ -26,7 +30,7 @@ export const HeroCarousel = ({ slides }: HeroCarouselProps) => {
 
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 6000);
+    }, 7000); // Increased from 6s to 7s for better viewing
 
     return () => clearInterval(timer);
   }, [isAutoPlaying, slides.length]);
@@ -47,27 +51,33 @@ export const HeroCarousel = ({ slides }: HeroCarouselProps) => {
 
   return (
     <section className="relative h-[85vh] min-h-[600px] overflow-hidden">
-      <AnimatePresence mode="wait">
+      {/* Image slides with smooth crossfade */}
+      <AnimatePresence initial={false}>
         {slides.map((slide, index) => (
           index === currentSlide && (
             <motion.div
               key={slide.id}
-              initial={{ opacity: 0, scale: 1.1 }}
-              animate={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 1.2, ease: "easeOut" }}
+              transition={{
+                duration: 1.5,
+                ease: [0.4, 0, 0.2, 1]
+              }}
               className="absolute inset-0"
             >
-              <div
-                className="absolute inset-0 bg-cover bg-center"
-                style={{ backgroundImage: `url(${slide.image})` }}
-              />
+              {/* Ken Burns effect layer */}
               <motion.div
-                initial={{ scale: 1 }}
-                animate={{ scale: 1.05 }}
-                transition={{ duration: 8, ease: "linear" }}
-                className="absolute inset-0 bg-cover bg-center"
-                style={{ backgroundImage: `url(${slide.image})` }}
+                initial={{ scale: 1.05 }}
+                animate={{ scale: 1.12 }}
+                transition={{
+                  duration: 12,
+                  ease: "linear"
+                }}
+                className="absolute inset-0 bg-cover bg-center will-change-transform"
+                style={{
+                  backgroundImage: `url(${slide.image})`
+                }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/40 to-transparent" />
             </motion.div>
@@ -75,16 +85,26 @@ export const HeroCarousel = ({ slides }: HeroCarouselProps) => {
         ))}
       </AnimatePresence>
 
+      {/* Animated Background Effects */}
+      <BackgroundBeams className="opacity-30" />
+      <SpotlightEffect className="z-5" />
+      <FloatingElements count={8} className="opacity-40" />
+
+
       {/* Content */}
       <div className="relative z-10 h-full flex items-end pb-24">
         <div className="container mx-auto px-6">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentSlide}
-              initial={{ opacity: 0, y: 40 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{
+                duration: 0.8,
+                delay: 0.3,
+                ease: [0.4, 0, 0.2, 1]
+              }}
               className="max-w-3xl"
             >
               <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-primary-foreground font-bold mb-4 leading-tight">
@@ -130,7 +150,7 @@ export const HeroCarousel = ({ slides }: HeroCarouselProps) => {
             key={index}
             onClick={() => goToSlide(index)}
             className={`h-2 rounded-full transition-all duration-300 ${index === currentSlide
-              ? "w-12 bg-accent"
+              ? "w-12 bg-[hsl(175_70%_50%)]"
               : "w-2 bg-primary-foreground/40 hover:bg-primary-foreground/60"
               }`}
             aria-label={`Go to slide ${index + 1}`}
