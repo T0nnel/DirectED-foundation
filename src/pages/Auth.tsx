@@ -22,39 +22,28 @@ const Auth = () => {
   const [signupEmail, setSignupEmail] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
 
-  // Validation errors
-  const [errors, setErrors] = useState<Record<string, string>>({});
-
   const { user, signIn, signUp } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
     if (user) {
-      navigate('/admin');
+      navigate('/'); // Redirect to home when logged in
     }
   }, [user, navigate]);
 
-  const validateEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newErrors: Record<string, string> = {};
 
-    if (!loginEmail) newErrors.loginEmail = 'Email is required';
-    else if (!validateEmail(loginEmail)) newErrors.loginEmail = 'Invalid email address';
-    if (!loginPassword) newErrors.loginPassword = 'Password is required';
-    else if (loginPassword.length < 6) newErrors.loginPassword = 'Password must be at least 6 characters';
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+    if (!loginEmail || !loginPassword) {
+      toast({
+        title: 'Error',
+        description: 'Please fill in all fields',
+        variant: 'destructive',
+      });
       return;
     }
 
-    setErrors({});
     setIsSubmitting(true);
     const { error } = await signIn(loginEmail, loginPassword);
     setIsSubmitting(false);
@@ -70,53 +59,53 @@ const Auth = () => {
         title: 'Welcome back!',
         description: 'You have successfully logged in.',
       });
-      navigate('/admin');
+      navigate('/');
     }
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newErrors: Record<string, string> = {};
 
-    if (!signupName) newErrors.signupName = 'Name is required';
-    else if (signupName.length < 2) newErrors.signupName = 'Name must be at least 2 characters';
-    if (!signupEmail) newErrors.signupEmail = 'Email is required';
-    else if (!validateEmail(signupEmail)) newErrors.signupEmail = 'Invalid email address';
-    if (!signupPassword) newErrors.signupPassword = 'Password is required';
-    else if (signupPassword.length < 6) newErrors.signupPassword = 'Password must be at least 6 characters';
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+    if (!signupEmail || !signupPassword || !signupName) {
+      toast({
+        title: 'Error',
+        description: 'Please fill in all fields',
+        variant: 'destructive',
+      });
       return;
     }
 
-    setErrors({});
+    if (signupPassword.length < 6) {
+      toast({
+        title: 'Error',
+        description: 'Password must be at least 6 characters',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     const { error } = await signUp(signupEmail, signupPassword, signupName);
     setIsSubmitting(false);
 
     if (error) {
-      let message = error.message;
-      if (message.includes('already registered')) {
-        message = 'This email is already registered. Please log in instead.';
-      }
       toast({
         title: 'Sign up failed',
-        description: message,
+        description: error.message,
         variant: 'destructive',
       });
     } else {
       toast({
         title: 'Account created!',
-        description: 'Please contact an administrator to get admin access.',
+        description: 'Please check your email to confirm your account.',
       });
-      navigate('/admin');
+      // Stay on auth page or switch to login
+      setIsLogin(true);
     }
   };
 
   const switchMode = () => {
     setIsLogin(!isLogin);
-    setErrors({});
     // Clear all form fields
     setLoginEmail('');
     setLoginPassword('');
@@ -135,7 +124,7 @@ const Auth = () => {
       >
         <div className="flex items-center justify-center mb-8">
           <Leaf className="h-10 w-10 text-primary mr-2" />
-          <span className="font-serif text-2xl font-bold text-primary">DirectED Development Foundation Admin</span>
+          <span className="font-serif text-2xl font-bold text-primary">DirectED Development Foundation</span>
         </div>
 
         <Card className="shadow-elevated">
@@ -145,8 +134,8 @@ const Auth = () => {
             </CardTitle>
             <CardDescription>
               {isLogin
-                ? 'Sign in to access the admin dashboard'
-                : 'Register to request admin access'}
+                ? 'Sign in to your account'
+                : 'Create a new account to get started'}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -163,11 +152,7 @@ const Auth = () => {
                     value={loginEmail}
                     onChange={(e) => setLoginEmail(e.target.value)}
                     autoComplete="email"
-                    className={errors.loginEmail ? 'border-destructive' : ''}
                   />
-                  {errors.loginEmail && (
-                    <p className="text-sm text-destructive">{errors.loginEmail}</p>
-                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -182,7 +167,6 @@ const Auth = () => {
                       value={loginPassword}
                       onChange={(e) => setLoginPassword(e.target.value)}
                       autoComplete="current-password"
-                      className={errors.loginPassword ? 'border-destructive' : ''}
                     />
                     <button
                       type="button"
@@ -192,9 +176,6 @@ const Auth = () => {
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
-                  {errors.loginPassword && (
-                    <p className="text-sm text-destructive">{errors.loginPassword}</p>
-                  )}
                 </div>
 
                 <Button type="submit" className="w-full" disabled={isSubmitting}>
@@ -214,11 +195,7 @@ const Auth = () => {
                     value={signupName}
                     onChange={(e) => setSignupName(e.target.value)}
                     autoComplete="name"
-                    className={errors.signupName ? 'border-destructive' : ''}
                   />
-                  {errors.signupName && (
-                    <p className="text-sm text-destructive">{errors.signupName}</p>
-                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -232,11 +209,7 @@ const Auth = () => {
                     value={signupEmail}
                     onChange={(e) => setSignupEmail(e.target.value)}
                     autoComplete="email"
-                    className={errors.signupEmail ? 'border-destructive' : ''}
                   />
-                  {errors.signupEmail && (
-                    <p className="text-sm text-destructive">{errors.signupEmail}</p>
-                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -251,7 +224,6 @@ const Auth = () => {
                       value={signupPassword}
                       onChange={(e) => setSignupPassword(e.target.value)}
                       autoComplete="new-password"
-                      className={errors.signupPassword ? 'border-destructive' : ''}
                     />
                     <button
                       type="button"
@@ -261,9 +233,6 @@ const Auth = () => {
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
-                  {errors.signupPassword && (
-                    <p className="text-sm text-destructive">{errors.signupPassword}</p>
-                  )}
                 </div>
 
                 <Button type="submit" className="w-full" disabled={isSubmitting}>

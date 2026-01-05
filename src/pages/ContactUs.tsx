@@ -1,13 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { Mail, Phone, MapPin, Send, Facebook, Twitter, Instagram, Linkedin, Youtube } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useToast } from "@/hooks/use-toast";
+import { useCMS } from "@/contexts/CMSContext";
+import { EditableText } from "@/components/cms/EditableText";
 
 const ContactUs = () => {
     const { t } = useTranslation();
+    const { toast } = useToast();
+    const { loadPageContent } = useCMS();
+
+    useEffect(() => {
+        loadPageContent('contact');
+    }, []);
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -19,6 +28,20 @@ const ContactUs = () => {
         e.preventDefault();
         // Handle form submission
         console.log("Form submitted:", formData);
+
+        // Show success message
+        toast({
+            title: "Message Sent!",
+            description: "Thank you for contacting us. We'll get back to you soon.",
+        });
+
+        // Reset form
+        setFormData({
+            name: "",
+            email: "",
+            subject: "",
+            message: "",
+        });
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -75,12 +98,20 @@ const ContactUs = () => {
                             transition={{ duration: 0.6 }}
                             className="text-center max-w-3xl mx-auto"
                         >
-                            <h1 className="font-serif text-4xl md:text-5xl font-bold mb-6">
-                                Get in Touch
-                            </h1>
-                            <p className="text-lg md:text-xl text-primary-foreground/80">
-                                Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
-                            </p>
+                            <EditableText
+                                pageName="contact"
+                                contentKey="hero_title"
+                                defaultValue="Get in Touch"
+                                as="h1"
+                                className="font-serif text-4xl md:text-5xl font-bold mb-6"
+                            />
+                            <EditableText
+                                pageName="contact"
+                                contentKey="hero_subtitle"
+                                defaultValue="Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible."
+                                as="p"
+                                className="text-lg md:text-xl text-primary-foreground/80"
+                            />
                         </motion.div>
                     </div>
                 </section>

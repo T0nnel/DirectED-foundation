@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { HeroCarousel } from "@/components/HeroCarousel";
@@ -8,6 +9,9 @@ import { CTASection } from "@/components/CTASection";
 import { Partners3DGlobe } from "@/components/Partners3DGlobe";
 import { FeatureShowcase } from "@/components/FeatureShowcase";
 import { TrustSection } from "@/components/TrustSection";
+import { EditableText } from "@/components/cms/EditableText";
+import { EditableImage } from "@/components/cms/EditableImage";
+import { useCMS } from "@/contexts/CMSContext";
 import { Users, GraduationCap, Globe, Briefcase, Shield, Rocket, TrendingUp } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
@@ -22,7 +26,12 @@ import news2 from "@/assets/image7.jpg";
 import news3 from "@/assets/image5.jpg";
 
 const Index = () => {
+  const { loadPageContent, currentLanguage } = useCMS();
   const { t } = useTranslation();
+
+  useEffect(() => {
+    loadPageContent('home');
+  }, [currentLanguage]); // Reload when language changes
 
   const heroSlides = [
     {

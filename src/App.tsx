@@ -23,45 +23,53 @@ import Team from "./pages/Team";
 import Partnerships from "./pages/Partnerships";
 import DataHub from "./pages/DataHub";
 import ContactUs from "./pages/ContactUs";
+import AccessRequests from "./pages/AccessRequests";
+import TestAuth from "./pages/TestAuth";
+import { CMSProvider } from "@/contexts/CMSContext";
+import { AdminToolbar } from "@/components/cms/AdminToolbar";
 
 const queryClient = new QueryClient();
 
 const App = () => (
     <QueryClientProvider client={queryClient}>
         <AuthProvider>
-            <TooltipProvider>
-                <Toaster />
-                <Sonner />
-                <BrowserRouter>
-                    <Routes>
-                        <Route path="/" element={<Index />} />
-                        <Route path="/what-we-do" element={<WhatWeDo />} />
-                        <Route path="/programs" element={<Programs />} />
-                        <Route path="/programs/:id" element={<ProgramDetail />} />
-                        <Route path="/focus/:slug" element={<FocusAreaDetail />} />
-                        <Route path="/research" element={<Research />} />
-                        <Route path="/publications" element={<Publications />} />
-                        <Route path="/data" element={<DataHub />} />
-                        <Route path="/stories" element={<Stories />} />
-                        <Route path="/success-stories" element={<Stories />} />
-                        <Route path="/blog" element={<Stories />} />
-                        <Route path="/about" element={<About />} />
-                        <Route path="/mission" element={<About />} />
-                        <Route path="/team" element={<Team />} />
-                        <Route path="/partners" element={<Partnerships />} />
-                        <Route path="/partnerships" element={<Partnerships />} />
-                        <Route path="/take-action" element={<TakeAction />} />
-                        <Route path="/donate" element={<TakeAction />} />
-                        <Route path="/volunteer" element={<TakeAction />} />
-                        <Route path="/contactus" element={<ContactUs />} />
-                        <Route path="/auth" element={<Auth />} />
-                        <Route path="/admin" element={<Admin />} />
-                        <Route path="/admin/create" element={<AdminCreate />} />
-                        <Route path="/admin/edit/:id" element={<AdminEdit />} />
-                        <Route path="*" element={<NotFound />} />
-                    </Routes>
-                </BrowserRouter>
-            </TooltipProvider>
+            <CMSProvider>
+                <TooltipProvider>
+                    <Toaster />
+                    <Sonner />
+                    <BrowserRouter>
+                        <Routes>
+                            <Route path="/" element={<Index />} />
+                            <Route path="/what-we-do" element={<WhatWeDo />} />
+                            <Route path="/programs" element={<Programs />} />
+                            <Route path="/programs/:id" element={<ProgramDetail />} />
+                            <Route path="/focus/:slug" element={<FocusAreaDetail />} />
+                            <Route path="/research" element={<Research />} />
+                            <Route path="/publications" element={<Publications />} />
+                            <Route path="/data" element={<DataHub />} />
+                            <Route path="/stories" element={<Stories />} />
+                            <Route path="/success-stories" element={<Stories />} />
+                            <Route path="/blog" element={<Stories />} />
+                            <Route path="/about" element={<About />} />
+                            <Route path="/mission" element={<About />} />
+                            <Route path="/team" element={<Team />} />
+                            <Route path="/partners" element={<Partnerships />} />
+                            <Route path="/partnerships" element={<Partnerships />} />
+                            <Route path="/take-action" element={<TakeAction />} />
+                            <Route path="/donate" element={<TakeAction />} />
+                            <Route path="/volunteer" element={<TakeAction />} />
+                            <Route path="/contactus" element={<ContactUs />} />
+                            <Route path="/auth" element={<Auth />} />
+                            <Route path="/test-auth" element={<TestAuth />} />
+                            <Route path="/admin" element={<Admin />} />
+                            <Route path="/admin/access-requests" element={<AccessRequests />} />
+                            <Route path="/admin/create" element={<AdminCreate />} />
+                            <Route path="/admin/edit/:id" element={<AdminEdit />} />
+                            <Route path="*" element={<NotFound />} />
+                        </Routes>
+                    </BrowserRouter>
+                </TooltipProvider>
+            </CMSProvider>
         </AuthProvider>
     </QueryClientProvider>
 );

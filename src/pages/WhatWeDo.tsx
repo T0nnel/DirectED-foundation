@@ -3,8 +3,17 @@ import { Footer } from "@/components/Footer";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, BookOpen, Lightbulb, Users, Code } from "lucide-react";
+import { useCMS } from "@/contexts/CMSContext";
+import { EditableText } from "@/components/cms/EditableText";
+import { useEffect } from "react";
 
 const WhatWeDo = () => {
+  const { loadPageContent } = useCMS();
+
+  useEffect(() => {
+    loadPageContent('whatwedo');
+  }, []);
+
   const programs = [
     {
       icon: <Code className="w-8 h-8" />,
@@ -31,7 +40,7 @@ const WhatWeDo = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      
+
       <main>
         {/* Hero Section */}
         <section className="bg-primary py-24">
@@ -42,13 +51,20 @@ const WhatWeDo = () => {
               transition={{ duration: 0.6 }}
               className="max-w-3xl"
             >
-              <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6">
-                What We Do
-              </h1>
-              <p className="text-xl text-primary-foreground/80">
-                We provide world-class education and career opportunities to talented individuals across Africa, 
-                connecting them with global companies and transforming lives through technology.
-              </p>
+              <EditableText
+                pageName="whatwedo"
+                contentKey="hero_title"
+                defaultValue="What We Do"
+                as="h1"
+                className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6"
+              />
+              <EditableText
+                pageName="whatwedo"
+                contentKey="hero_subtitle"
+                defaultValue="We provide world-class education and career opportunities to talented individuals across Africa, connecting them with global companies and transforming lives through technology."
+                as="p"
+                className="text-xl text-primary-foreground/80"
+              />
             </motion.div>
           </div>
         </section>
@@ -62,12 +78,20 @@ const WhatWeDo = () => {
               viewport={{ once: true }}
               className="text-center mb-16"
             >
-              <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4">
-                Our Programs
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Comprehensive training programs designed to prepare you for success in the global tech industry.
-              </p>
+              <EditableText
+                pageName="whatwedo"
+                contentKey="programs_title"
+                defaultValue="Our Programs"
+                as="h2"
+                className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4"
+              />
+              <EditableText
+                pageName="whatwedo"
+                contentKey="programs_subtitle"
+                defaultValue="Comprehensive training programs designed to prepare you for success in the global tech industry."
+                as="p"
+                className="text-lg text-muted-foreground max-w-2xl mx-auto"
+              />
               <div className="section-divider mt-6" />
             </motion.div>
 
@@ -108,12 +132,20 @@ const WhatWeDo = () => {
               viewport={{ once: true }}
               className="text-center mb-16"
             >
-              <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4">
-                The Journey
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                A structured path from learning to earning
-              </p>
+              <EditableText
+                pageName="whatwedo"
+                contentKey="journey_title"
+                defaultValue="The Journey"
+                as="h2"
+                className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4"
+              />
+              <EditableText
+                pageName="whatwedo"
+                contentKey="journey_subtitle"
+                defaultValue="A structured path from learning to earning"
+                as="p"
+                className="text-lg text-muted-foreground max-w-2xl mx-auto"
+              />
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

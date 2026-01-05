@@ -142,28 +142,80 @@ const Admin = () => {
   }
 
   if (!isAdmin) {
+    const handleRequestAccess = async () => {
+      const { data: existingRequest } = await supabase
+        .from('access_requests')
+        .select('*')
+        .eq('user_id', user?.id)
+        .single();
+
+      if (existingRequest) {
+        toast({
+          title: 'Request already submitted',
+          description: `Your access request is ${existingRequest.status}. Please wait for admin approval.`,
+        });
+        return;
+      }
+
+      const { error } = await supabase
+        .from('access_requests')
+        .insert({
+          user_id: user?.id,
+          user_email: user?.email,
+          user_name: user?.user_metadata?.full_name || user?.email,
+          reason: 'Requesting admin access',
+        });
+
+      if (error) {
+        toast({
+          title: 'Request failed',
+          description: error.message,
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: 'Request submitted',
+          description: 'Your access request has been sent to the administrator.',
+        });
+      }
+    };
+
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="max-w-md w-full">
           <CardHeader className="text-center">
             <CardTitle className="font-serif text-2xl">Access Denied</CardTitle>
             <CardDescription>
-              You don't have admin privileges. Please contact an administrator to request access.
+              You don't have admin privileges. Please contact the administrator to request access.
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
             <p className="text-sm text-muted-foreground text-center">
               Logged in as: {user?.email}
             </p>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={() => navigate('/')} className="flex-1">
-                <Home className="mr-2 h-4 w-4" />
-                Go Home
+            <div className="bg-muted p-4 rounded-lg text-center">
+              <p className="text-sm font-medium mb-1">Administrator Contact</p>
+              <a
+                href="mailto:tonnel@directed.dev"
+                className="text-accent hover:underline"
+              >
+                tonnel@directed.dev
+              </a>
+            </div>
+            <div className="flex flex-col gap-2">
+              <Button onClick={handleRequestAccess} className="w-full">
+                Request Admin Access
               </Button>
-              <Button variant="destructive" onClick={handleSignOut} className="flex-1">
-                <LogOut className="mr-2 h-4 w-4" />
-                Sign Out
-              </Button>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => navigate('/')} className="flex-1">
+                  <Home className="mr-2 h-4 w-4" />
+                  Go Home
+                </Button>
+                <Button variant="destructive" onClick={handleSignOut} className="flex-1">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Sign Out
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -183,6 +235,9 @@ const Admin = () => {
             </Link>
           </div>
           <div className="flex items-center gap-4">
+            <Button variant="secondary" size="sm" onClick={() => navigate('/admin/access-requests')}>
+              Access Requests
+            </Button>
             <span className="text-sm opacity-80">{user?.email}</span>
             <Button variant="secondary" size="sm" onClick={handleSignOut}>
               <LogOut className="mr-2 h-4 w-4" />

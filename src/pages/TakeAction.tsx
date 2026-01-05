@@ -5,8 +5,18 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Heart, Users, Megaphone, Building, ArrowRight } from "lucide-react";
 import hero3 from "@/assets/image8.jpg";
+import { useCMS } from "@/contexts/CMSContext";
+import { EditableText } from "@/components/cms/EditableText";
+import { EditableImage } from "@/components/cms/EditableImage";
+import { useEffect } from "react";
 
 const TakeAction = () => {
+  const { loadPageContent } = useCMS();
+
+  useEffect(() => {
+    loadPageContent('takeaction');
+  }, []);
+
   const actions = [
     {
       icon: <Heart className="w-8 h-8" />,
@@ -48,13 +58,20 @@ const TakeAction = () => {
               transition={{ duration: 0.6 }}
               className="max-w-3xl"
             >
-              <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6">
-                Take Action
-              </h1>
-              <p className="text-xl text-primary-foreground/80">
-                Join us in creating opportunities for Africa's next generation of tech leaders.
-                There are many ways to make a difference.
-              </p>
+              <EditableText
+                pageName="takeaction"
+                contentKey="hero_title"
+                defaultValue="Take Action"
+                as="h1"
+                className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6"
+              />
+              <EditableText
+                pageName="takeaction"
+                contentKey="hero_subtitle"
+                defaultValue="Join us in creating opportunities for Africa's next generation of tech leaders. There are many ways to make a difference."
+                as="p"
+                className="text-xl text-primary-foreground/80"
+              />
             </motion.div>
           </div>
         </section>

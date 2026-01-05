@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Menu, X, Search, Globe } from "lucide-react";
+import { ChevronDown, Menu, X, Search, Globe, User, LogOut, LogIn, Edit3, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoImage from "@/assets/Facebook profile-01.jpg";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "@/hooks/useAuth";
+import { useCMS } from "@/contexts/CMSContext";
+import { useToast } from "@/hooks/use-toast";
 
 interface NavItem {
   label: string;
@@ -14,10 +17,15 @@ interface NavItem {
 
 export const Header = () => {
   const { t, i18n } = useTranslation();
+  const { user, isAdmin, signOut } = useAuth();
+  const { isEditMode, toggleEditMode, setLanguage } = useCMS();
+  const { toast } = useToast();
+  const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   // Derive navItems from translations
   const navItems: NavItem[] = [
@@ -73,11 +81,11 @@ export const Header = () => {
 
   const languages = [
     { code: "en", name: "English" },
+    { code: "sw", name: "Kiswahili" },
+    { code: "am", name: "አማርኛ (Amharic)" },
     { code: "fr", name: "Français" },
     { code: "es", name: "Español" },
-    { code: "sw", name: "Kiswahili" },
-    { code: "ar", name: "العربية" },
-    { code: "pt", name: "Português" },
+    { code: "zh", name: "中文 (Chinese)" },
   ];
 
   const handleLanguageChange = (langCode: string) => {
@@ -103,17 +111,27 @@ export const Header = () => {
       if (!target.closest('[data-language-dropdown]')) {
         setIsLanguageDropdownOpen(false);
       }
+      if (!target.closest('[data-user-menu]')) {
+        setIsUserMenuOpen(false);
+      }
     };
 
     document.addEventListener('click', handleClickOutside);
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
+  const handleSignOut = async () => {
+    await signOut();
+    setIsUserMenuOpen(false);
+    navigate('/');
+  };
+
   return (
     <>
       {/* Top bar */}
       <div className="bg-primary text-primary-foreground text-sm py-2">
         <div className="container mx-auto px-6 flex justify-end items-center gap-4">
+          {/* Language Selector */}
           <div className="relative z-[60]" data-language-dropdown>
             <button
               onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
@@ -136,7 +154,11 @@ export const Header = () => {
                   {languages.map((lang) => (
                     <button
                       key={lang.code}
-                      onClick={() => handleLanguageChange(lang.code)}
+                      onClick={() => {
+                        handleLanguageChange(lang.code);
+                        // Also update CMS context
+                        setLanguage(lang.code);
+                      }}
                       className={`w-full text-left px-4 py-2.5 hover:bg-accent hover:text-accent-foreground transition-colors ${i18n.language === lang.code ? 'bg-muted font-medium' : ''
                         }`}
                     >
@@ -146,6 +168,75 @@ export const Header = () => {
                 </motion.div>
               )}
             </AnimatePresence>
+          </div>
+
+          {/* User Menu */}
+          <div className="relative z-[60]" data-user-menu>
+            {user ? (
+              <>
+                <button
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  className="flex items-center gap-2 hover:text-accent transition-colors"
+                >
+                  <div className="w-6 h-6 rounded-full bg-accent flex items-center justify-center">
+                    <User className="w-4 h-4" />
+                  </div>
+                  <span className="hidden sm:inline">{user.email?.split('@')[0]}</span>
+                  <ChevronDown className={`w-3 h-3 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                <AnimatePresence>
+                  {isUserMenuOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute top-full right-0 mt-2 bg-card text-card-foreground rounded-lg shadow-elevated border border-border min-w-[200px] overflow-hidden z-[70]"
+                    >
+                      <div className="px-4 py-3 border-b border-border">
+                        <p className="text-sm font-medium">{user.email}</p>
+                        {isAdmin && <p className="text-xs text-accent mt-1">Admin</p>}
+                      </div>
+
+                      {/* Admin CMS Controls */}
+                      {isAdmin && (
+                        <>
+                          <button
+                            onClick={() => {
+                              toggleEditMode();
+                              setIsUserMenuOpen(false);
+                            }}
+                            className={`w-full text-left px-4 py-2.5 hover:bg-accent hover:text-accent-foreground transition-colors flex items-center gap-2 ${isEditMode ? 'bg-accent/10 text-accent font-medium' : ''
+                              }`}
+                          >
+                            <Edit3 className="w-4 h-4" />
+                            {isEditMode ? 'Edit Mode: ON' : 'Edit Mode: OFF'}
+                          </button>
+
+                          <div className="h-px bg-border my-1" />
+                        </>
+                      )}
+
+                      <button
+                        onClick={() => navigate('/test-auth')}
+                        className="w-full text-left px-4 py-2.5 hover:bg-accent hover:text-accent-foreground transition-colors flex items-center gap-2"
+                      >
+                        <User className="w-4 h-4" />
+                        Profile
+                      </button>
+                      <button
+                        onClick={handleSignOut}
+                        className="w-full text-left px-4 py-2.5 hover:bg-accent hover:text-accent-foreground transition-colors flex items-center gap-2 text-destructive"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Sign Out
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </>
+            ) : null}
           </div>
         </div>
       </div>

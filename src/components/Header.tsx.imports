@@ -1,0 +1,10 @@
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronDown, Menu, X, Search, Globe, User, LogOut, LogIn, Edit3, Save } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import logoImage from "@/assets/Facebook profile-01.jpg";
+import { useTranslation } from "react-i18next";
+import { useAuth } from "@/hooks/useAuth";
+import { useCMS } from "@/contexts/CMSContext";
+import { useToast } from "@/hooks/use-toast";

@@ -8,6 +8,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { MapPin, ArrowRight, Image as ImageIcon } from 'lucide-react';
+import { useCMS } from '@/contexts/CMSContext';
+import { EditableText } from '@/components/cms/EditableText';
 
 interface ProgramListing {
   id: string;
@@ -23,8 +25,10 @@ const Programs = () => {
   const [listings, setListings] = useState<ProgramListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const { loadPageContent } = useCMS();
 
   useEffect(() => {
+    loadPageContent('programs');
     fetchListings();
   }, []);
 
@@ -49,7 +53,7 @@ const Programs = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       {/* Hero Section */}
       <section className="relative py-24 bg-primary text-primary-foreground overflow-hidden">
         <div className="absolute inset-0 opacity-10">
@@ -62,13 +66,20 @@ const Programs = () => {
             transition={{ duration: 0.6 }}
             className="max-w-3xl"
           >
-            <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-              Our Programs
-            </h1>
-            <p className="text-lg md:text-xl opacity-90 leading-relaxed">
-              Discover our initiatives making a difference in communities around the world.
-              Each program is designed to create lasting, sustainable impact.
-            </p>
+            <EditableText
+              pageName="programs"
+              contentKey="hero_title"
+              defaultValue="Our Programs"
+              as="h1"
+              className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold mb-6"
+            />
+            <EditableText
+              pageName="programs"
+              contentKey="hero_subtitle"
+              defaultValue="Discover our initiatives making a difference in communities around the world. Each program is designed to create lasting, sustainable impact."
+              as="p"
+              className="text-lg md:text-xl opacity-90 leading-relaxed"
+            />
           </motion.div>
         </div>
       </section>

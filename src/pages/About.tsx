@@ -1,13 +1,23 @@
+import { useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { StatsSection } from "@/components/StatsSection";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Target, Eye, Heart, Users, GraduationCap, Globe, Briefcase } from "lucide-react";
+import { useCMS } from "@/contexts/CMSContext";
+import { EditableText } from "@/components/cms/EditableText";
+import { EditableImage } from "@/components/cms/EditableImage";
 import content1 from "@/assets/image4.jpg";
 import content2 from "@/assets/image8.jpg";
 
 const About = () => {
+  const { loadPageContent } = useCMS();
+
+  useEffect(() => {
+    loadPageContent('about');
+  }, []);
+
   const stats = [
     { value: "500+", label: "Students Trained", icon: <GraduationCap className="w-8 h-8 text-accent" /> },
     { value: "15", label: "Partner Schools", icon: <Globe className="w-8 h-8 text-accent" /> },
@@ -35,12 +45,20 @@ const About = () => {
               transition={{ duration: 0.6 }}
               className="max-w-3xl"
             >
-              <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6">
-                Who We Are
-              </h1>
-              <p className="text-xl text-primary-foreground/80">
-                A mission-driven organization dedicated to empowering Africa's next generation of tech leaders.
-              </p>
+              <EditableText
+                pageName="about"
+                contentKey="hero_title"
+                defaultValue="Who We Are"
+                as="h1"
+                className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6"
+              />
+              <EditableText
+                pageName="about"
+                contentKey="hero_subtitle"
+                defaultValue="A mission-driven organization dedicated to empowering Africa's next generation of tech leaders."
+                as="p"
+                className="text-xl text-primary-foreground/80"
+              />
             </motion.div>
           </div>
         </section>
@@ -64,18 +82,27 @@ const About = () => {
                 <span className="inline-block px-4 py-1.5 bg-accent/10 text-accent text-sm font-medium rounded-full mb-4">
                   Our Vision
                 </span>
-                <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-6">
-                  A World Where Potential Knows No Boundaries
-                </h2>
-                <p className="text-lg text-muted-foreground mb-6">
-                  We believe that every person deserves the opportunity to realize their full potential,
-                  regardless of where they were born. Our vision is a world where talent, not geography,
-                  determines success.
-                </p>
-                <p className="text-lg text-muted-foreground">
-                  Through world-class education and direct connections to global opportunities,
-                  we're breaking down barriers and building bridges to brighter futures.
-                </p>
+                <EditableText
+                  pageName="about"
+                  contentKey="vision_title"
+                  defaultValue="A World Where Potential Knows No Boundaries"
+                  as="h2"
+                  className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-6"
+                />
+                <EditableText
+                  pageName="about"
+                  contentKey="vision_description_1"
+                  defaultValue="We believe that every person deserves the opportunity to realize their full potential, regardless of where they were born. Our vision is a world where talent, not geography, determines success."
+                  as="p"
+                  className="text-lg text-muted-foreground mb-6"
+                />
+                <EditableText
+                  pageName="about"
+                  contentKey="vision_description_2"
+                  defaultValue="Through world-class education and direct connections to global opportunities, we're breaking down barriers and building bridges to brighter futures."
+                  as="p"
+                  className="text-lg text-muted-foreground"
+                />
               </motion.div>
             </div>
           </div>

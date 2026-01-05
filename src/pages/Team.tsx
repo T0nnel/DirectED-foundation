@@ -1,11 +1,20 @@
+import { useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { motion } from "framer-motion";
 import { teamMembers, getLeadershipTeam, TeamMember } from "@/data/teamMembers";
 import { Linkedin, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useCMS } from "@/contexts/CMSContext";
+import { EditableText } from "@/components/cms/EditableText";
 
 const Team = () => {
+    const { loadPageContent } = useCMS();
+
+    useEffect(() => {
+        loadPageContent('team');
+    }, []);
+
     const leadershipTeam = getLeadershipTeam();
     const otherTeam = teamMembers.filter(member => member.department !== 'leadership');
 
@@ -85,13 +94,20 @@ const Team = () => {
                             transition={{ duration: 0.6 }}
                             className="max-w-3xl"
                         >
-                            <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6">
-                                Our Team
-                            </h1>
-                            <p className="text-xl text-primary-foreground/90 leading-relaxed">
-                                Meet the dedicated professionals working tirelessly to transform lives through education
-                                and create opportunities for Africa's next generation of tech leaders.
-                            </p>
+                            <EditableText
+                                pageName="team"
+                                contentKey="hero_title"
+                                defaultValue="Our Team"
+                                as="h1"
+                                className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6"
+                            />
+                            <EditableText
+                                pageName="team"
+                                contentKey="hero_subtitle"
+                                defaultValue="Meet the dedicated professionals working tirelessly to transform lives through education and create opportunities for Africa's next generation of tech leaders."
+                                as="p"
+                                className="text-xl text-primary-foreground/90 leading-relaxed"
+                            />
                         </motion.div>
                     </div>
                 </section>

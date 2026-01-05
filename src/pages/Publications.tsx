@@ -5,11 +5,18 @@ import { Link } from "react-router-dom";
 import { publications, Publication } from "@/data/publications";
 import { Button } from "@/components/ui/button";
 import { FileText, Calendar, Download, ArrowRight } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useCMS } from "@/contexts/CMSContext";
+import { EditableText } from "@/components/cms/EditableText";
 
 const Publications = () => {
     const [selectedType, setSelectedType] = useState<string>("all");
     const [selectedYear, setSelectedYear] = useState<number | "all">("all");
+    const { loadPageContent } = useCMS();
+
+    useEffect(() => {
+        loadPageContent('publications');
+    }, []);
 
     const types: { value: string; label: string }[] = [
         { value: "all", label: "All Publications" },
@@ -53,13 +60,20 @@ const Publications = () => {
                             transition={{ duration: 0.6 }}
                             className="max-w-3xl"
                         >
-                            <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6">
-                                Publications & Reports
-                            </h1>
-                            <p className="text-xl text-primary-foreground/90 leading-relaxed">
-                                Explore our research, annual reports, case studies, and impact analyses documenting
-                                DirectEd Development Foundation's work and the transformative power of education.
-                            </p>
+                            <EditableText
+                                pageName="publications"
+                                contentKey="hero_title"
+                                defaultValue="Publications & Reports"
+                                as="h1"
+                                className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6"
+                            />
+                            <EditableText
+                                pageName="publications"
+                                contentKey="hero_subtitle"
+                                defaultValue="Explore our research, annual reports, case studies, and impact analyses documenting DirectEd Development Foundation's work and the transformative power of education."
+                                as="p"
+                                className="text-xl text-primary-foreground/90 leading-relaxed"
+                            />
                         </motion.div>
                     </div>
                 </section>

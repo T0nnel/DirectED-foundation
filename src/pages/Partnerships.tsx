@@ -3,10 +3,17 @@ import { Footer } from "@/components/Footer";
 import { motion } from "framer-motion";
 import { partners, getPartnersByType, Partner } from "@/data/partnerships";
 import { Building2, GraduationCap, Heart, Landmark } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useCMS } from "@/contexts/CMSContext";
+import { EditableText } from "@/components/cms/EditableText";
 
 const Partnerships = () => {
     const [selectedType, setSelectedType] = useState<string>("all");
+    const { loadPageContent } = useCMS();
+
+    useEffect(() => {
+        loadPageContent('partnerships');
+    }, []);
 
     const types = [
         { value: "all", label: "All Partners", icon: Building2 },
@@ -45,14 +52,20 @@ const Partnerships = () => {
                             transition={{ duration: 0.6 }}
                             className="max-w-3xl"
                         >
-                            <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6">
-                                Our Partners
-                            </h1>
-                            <p className="text-xl text-primary-foreground/90 leading-relaxed">
-                                DirectEd Development Foundation's impact is amplified through strategic partnerships with leading corporations,
-                                educational institutions, nonprofits, and government agencies committed to transforming
-                                lives through education.
-                            </p>
+                            <EditableText
+                                pageName="partnerships"
+                                contentKey="hero_title"
+                                defaultValue="Our Partners"
+                                as="h1"
+                                className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6"
+                            />
+                            <EditableText
+                                pageName="partnerships"
+                                contentKey="hero_subtitle"
+                                defaultValue="DirectEd Development Foundation's impact is amplified through strategic partnerships with leading corporations, educational institutions, nonprofits, and government agencies committed to transforming lives through education."
+                                as="p"
+                                className="text-xl text-primary-foreground/90 leading-relaxed"
+                            />
                         </motion.div>
                     </div>
                 </section>
