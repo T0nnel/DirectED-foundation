@@ -5,18 +5,20 @@ import { useParams, Link } from "react-router-dom";
 import { focusAreas, getFocusAreaBySlug } from "@/data/focusAreas";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle2, TrendingUp } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const FocusAreaDetail = () => {
     const { slug } = useParams<{ slug: string }>();
     const focusArea = getFocusAreaBySlug(slug || "");
+    const { t } = useTranslation();
 
     if (!focusArea) {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
-                    <h1 className="text-2xl font-serif font-bold mb-4">Focus Area Not Found</h1>
+                    <h1 className="text-2xl font-serif font-bold mb-4">{t('focus.not_found', "Focus Area Not Found")}</h1>
                     <Link to="/what-we-do">
-                        <Button>Return to What We Do</Button>
+                        <Button>{t('focus.return', "Return to What We Do")}</Button>
                     </Link>
                 </div>
             </div>
@@ -38,7 +40,7 @@ const FocusAreaDetail = () => {
                             className="max-w-4xl"
                         >
                             <div className="inline-block px-4 py-1.5 bg-accent/20 rounded-full mb-6">
-                                <span className="text-sm font-medium text-primary-foreground">Focus Area</span>
+                                <span className="text-sm font-medium text-primary-foreground">{t('focus.badge', "Focus Area")}</span>
                             </div>
                             <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6">
                                 {focusArea.title}
@@ -88,10 +90,10 @@ const FocusAreaDetail = () => {
                                 viewport={{ once: true }}
                             >
                                 <div className="inline-block px-4 py-1.5 bg-accent/10 rounded-full mb-6">
-                                    <span className="text-sm font-medium text-accent">Overview</span>
+                                    <span className="text-sm font-medium text-accent">{t('focus.overview', "Overview")}</span>
                                 </div>
                                 <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-6">
-                                    Our Approach
+                                    {t('focus.our_approach', "Our Approach")}
                                 </h2>
                                 <p className="text-lg text-muted-foreground leading-relaxed">
                                     {focusArea.content.overview}
@@ -112,10 +114,10 @@ const FocusAreaDetail = () => {
                                 viewport={{ once: true }}
                             >
                                 <div className="inline-block px-4 py-1.5 bg-destructive/10 rounded-full mb-6">
-                                    <span className="text-sm font-medium text-destructive">Challenges</span>
+                                    <span className="text-sm font-medium text-destructive">{t('focus.challenges', "Challenges")}</span>
                                 </div>
                                 <h3 className="font-serif text-2xl md:text-3xl font-bold text-foreground mb-8">
-                                    What We're Addressing
+                                    {t('focus.what_addressing', "What We're Addressing")}
                                 </h3>
                                 <ul className="space-y-4">
                                     {focusArea.content.challenges.map((challenge, index) => (
@@ -136,10 +138,10 @@ const FocusAreaDetail = () => {
                                 viewport={{ once: true }}
                             >
                                 <div className="inline-block px-4 py-1.5 bg-accent/10 rounded-full mb-6">
-                                    <span className="text-sm font-medium text-accent">Solutions</span>
+                                    <span className="text-sm font-medium text-accent">{t('focus.solutions', "Solutions")}</span>
                                 </div>
                                 <h3 className="font-serif text-2xl md:text-3xl font-bold text-foreground mb-8">
-                                    How We're Helping
+                                    {t('focus.how_helping', "How We're Helping")}
                                 </h3>
                                 <ul className="space-y-4">
                                     {focusArea.content.solutions.map((solution, index) => (
@@ -165,17 +167,17 @@ const FocusAreaDetail = () => {
                                 className="text-center"
                             >
                                 <div className="inline-block px-4 py-1.5 bg-accent/20 rounded-full mb-6">
-                                    <span className="text-sm font-medium text-primary-foreground">Impact</span>
+                                    <span className="text-sm font-medium text-primary-foreground">{t('focus.impact', "Impact")}</span>
                                 </div>
                                 <h2 className="font-serif text-3xl md:text-4xl font-bold text-primary-foreground mb-6">
-                                    Making a Difference
+                                    {t('focus.making_difference', "Making a Difference")}
                                 </h2>
                                 <p className="text-lg text-primary-foreground/90 leading-relaxed mb-8">
                                     {focusArea.content.impact}
                                 </p>
                                 <Link to="/take-action">
                                     <Button variant="accent" size="lg" className="gap-2">
-                                        Support This Cause <ArrowRight className="w-5 h-5" />
+                                        {t('focus.support_cause', "Support This Cause")} <ArrowRight className="w-5 h-5" />
                                     </Button>
                                 </Link>
                             </motion.div>
@@ -187,7 +189,7 @@ const FocusAreaDetail = () => {
                 <section className="py-20 bg-background">
                     <div className="container mx-auto px-6">
                         <h2 className="font-serif text-3xl md:text-4xl font-bold text-center mb-12">
-                            Explore More Focus Areas
+                            {t('focus.explore_more', "Explore More Focus Areas")}
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                             {focusAreas

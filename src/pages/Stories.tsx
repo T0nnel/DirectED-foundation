@@ -7,9 +7,11 @@ import { motion } from "framer-motion";
 import { useCMS } from "@/contexts/CMSContext";
 import { EditableText } from "@/components/cms/EditableText";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 const Stories = () => {
   const { loadPageContent } = useCMS();
+  const { t } = useTranslation();
 
   useEffect(() => {
     loadPageContent('stories');
@@ -32,14 +34,14 @@ const Stories = () => {
               <EditableText
                 pageName="stories"
                 contentKey="hero_title"
-                defaultValue="Success Stories"
+                defaultValue={t('stories.hero_title', "Success Stories")}
                 as="h1"
                 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6"
               />
               <EditableText
                 pageName="stories"
                 contentKey="hero_subtitle"
-                defaultValue="Discover the transformative journeys of DirectED students who are building brighter futures through technology education and career opportunities."
+                defaultValue={t('stories.hero_subtitle', "Discover the transformative journeys of DirectED students who are building brighter futures through technology education and career opportunities.")}
                 as="p"
                 className="text-xl text-primary-foreground/80"
               />
@@ -53,7 +55,7 @@ const Stories = () => {
             <EditableText
               pageName="stories"
               contentKey="content_title"
-              defaultValue="Stories coming soon..."
+              defaultValue={t('stories.coming_soon', "Stories coming soon...")}
               as="h2"
               className="font-serif text-3xl font-bold text-foreground text-center"
             />

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { HeroCarousel } from "@/components/HeroCarousel";
@@ -15,6 +15,7 @@ import { useCMS } from "@/contexts/CMSContext";
 import { Users, GraduationCap, Globe, Briefcase, Shield, Rocket, TrendingUp } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import { fetchPageContent } from "@/lib/supabase/content";
 // Import images
 import hero1 from "@/assets/image1.jpg";
 import hero2 from "@/assets/image2.jpg";
@@ -25,40 +26,116 @@ import news1 from "@/assets/image6.jpg";
 import news2 from "@/assets/image7.jpg";
 import news3 from "@/assets/image5.jpg";
 
+// Helper to get saved content for hero slides
+interface SavedContentEntry {
+  newText: string;
+  originalText: string;
+}
+
 const Index = () => {
   const { loadPageContent, currentLanguage } = useCMS();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const [savedHeroContent, setSavedHeroContent] = useState<Record<string, string>>({});
+  const [isLoaded, setIsLoaded] = useState(false);
 
+  // Function to load saved hero content - uses passed language to avoid stale closure
+  const loadHeroContent = async (lang: string) => {
+    const storageKey = `cms_content_home_${lang}`;
+    const savedMap: Record<string, string> = {};
+    
+    // Try localStorage first (synchronous, works immediately on refresh)
+    const localContent = localStorage.getItem(storageKey);
+    if (localContent) {
+      try {
+        const parsed = JSON.parse(localContent);
+        Object.entries(parsed).forEach(([key, value]) => {
+          if (typeof value === 'object' && value !== null) {
+            const entry = value as SavedContentEntry;
+            if (entry.originalText && entry.newText) {
+              savedMap[entry.originalText] = entry.newText;
+            }
+          }
+        });
+      } catch (e) {
+        // Ignore parse errors
+      }
+    }
+    
+    // Also try database
+    try {
+      const dbContent = await fetchPageContent('home', lang);
+      dbContent.forEach((item) => {
+        if (item.content_key.startsWith('global_')) {
+          try {
+            const parsed = JSON.parse(item.content_value);
+            if (parsed.originalText && parsed.newText) {
+              savedMap[parsed.originalText] = parsed.newText;
+            }
+          } catch {
+            // Not JSON, skip
+          }
+        }
+      });
+    } catch (e) {
+      // Database not available
+    }
+    
+    setSavedHeroContent(savedMap);
+    setIsLoaded(true);
+  };
+
+  // Load saved hero content on mount and when language changes
   useEffect(() => {
+    const lang = i18n.language?.split('-')[0] || 'en';
     loadPageContent('home');
-  }, [currentLanguage]); // Reload when language changes
+    loadHeroContent(lang);
+  }, [currentLanguage, i18n.language]);
 
-  const heroSlides = [
-    {
-      id: 1,
-      image: hero1,
-      title: t('hero.slide1.title', "Empowering Africa's Next Generation of Tech Leaders"),
-      subtitle: t('hero.slide1.subtitle', "World-class training and remote paid internships with US and European companies. Web development, UIX and Artificial Intelligence."),
-      cta: t('hero.slide1.cta', "Discover Our Programs"),
-      link: "/programs",
-    },
-    {
-      id: 2,
-      image: hero2,
-      title: t('hero.slide2.title', "Connecting Talent with Global Opportunities"),
-      subtitle: t('hero.slide2.subtitle', "We bridge the gap between high-potential talents and the world's best education to fill skill gaps in the global jobs market."),
-      cta: t('hero.slide2.cta', "Learn More"),
-      link: "/about",
-    },
-    {
-      id: 3,
-      image: hero3,
-      title: t('hero.slide3.title', "Transforming Lives Through Education"),
-      subtitle: t('hero.slide3.subtitle', "A world in which any person can realise their full potential, regardless of their draw in the lottery of life."),
-      cta: t('hero.slide3.cta', "Join Our Mission"),
-      link: "/take-action",
-    },
-  ];
+  // Listen for CMS content updates (custom event from GlobalEditMode)
+  useEffect(() => {
+    const handleContentUpdate = () => {
+      const lang = i18n.language?.split('-')[0] || 'en';
+      loadHeroContent(lang);
+    };
+    
+    window.addEventListener('cms-content-saved', handleContentUpdate);
+    return () => window.removeEventListener('cms-content-saved', handleContentUpdate);
+  }, [i18n.language]);
+
+  // Hero slides with saved content applied - rebuilds when savedHeroContent changes
+  const heroSlides = useMemo(() => {
+    // Helper function to get edited text or fallback to original
+    const getEditedText = (originalText: string) => {
+      return savedHeroContent[originalText] || originalText;
+    };
+    
+    return [
+      {
+        id: 1,
+        image: hero1,
+        title: getEditedText(t('hero.slide1.title', "Empowering Africa's Next Generation of Tech Leaders")),
+        subtitle: getEditedText(t('hero.slide1.subtitle', "World-class training and remote paid internships with US and European companies. Web development, UIX and Artificial Intelligence.")),
+        cta: getEditedText(t('hero.slide1.cta', "Discover Our Programs")),
+        link: "/programs",
+      },
+      {
+        id: 2,
+        image: hero2,
+        title: getEditedText(t('hero.slide2.title', "Connecting Talent with Global Opportunities")),
+        subtitle: getEditedText(t('hero.slide2.subtitle', "We bridge the gap between high-potential talents and the world's best education to fill skill gaps in the global jobs market.")),
+        cta: getEditedText(t('hero.slide2.cta', "Learn More")),
+        link: "/about",
+      },
+      {
+        id: 3,
+        image: hero3,
+        title: getEditedText(t('hero.slide3.title', "Transforming Lives Through Education")),
+        subtitle: getEditedText(t('hero.slide3.subtitle', "A world in which any person can realise their full potential, regardless of their draw in the lottery of life.")),
+        cta: getEditedText(t('hero.slide3.cta', "Join Our Mission")),
+        link: "/take-action",
+      },
+    ];
+  }, [savedHeroContent, t]);
 
   const stats = [
     {

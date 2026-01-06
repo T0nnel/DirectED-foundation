@@ -7,6 +7,7 @@ import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, MapPin, Calendar, Image as ImageIcon } from 'lucide-react';
+import { useTranslation } from "react-i18next";
 
 interface ProgramListing {
   id: string;
@@ -24,6 +25,7 @@ const ProgramDetail = () => {
   const navigate = useNavigate();
   const [listing, setListing] = useState<ProgramListing | null>(null);
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (id) {
@@ -95,7 +97,7 @@ const ProgramDetail = () => {
             className="inline-flex items-center text-muted-foreground hover:text-primary transition-colors mb-8"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Programs
+            {t('program.back_to_programs', "Back to Programs")}
           </Link>
 
           {/* Featured Image */}
@@ -159,17 +161,17 @@ const ProgramDetail = () => {
           {/* CTA Section */}
           <div className="mt-12 p-8 bg-secondary rounded-xl">
             <h3 className="font-serif text-2xl font-bold mb-4">
-              Want to support this initiative?
+              {t('program.support_title', "Want to support this initiative?")}
             </h3>
             <p className="text-muted-foreground mb-6">
-              Your contribution can help make a lasting difference in the lives of those we serve.
+              {t('program.support_desc', "Your contribution can help make a lasting difference in the lives of those we serve.")}
             </p>
             <div className="flex flex-wrap gap-4">
               <Button variant="default" size="lg" asChild>
-                <Link to="/take-action">Take Action</Link>
+                <Link to="/take-action">{t('nav.take_action', "Take Action")}</Link>
               </Button>
               <Button variant="outline" size="lg" asChild>
-                <Link to="/what-we-do">Learn More</Link>
+                <Link to="/what-we-do">{t('common.learn_more', "Learn More")}</Link>
               </Button>
             </div>
           </div>

@@ -6,21 +6,23 @@ import { Building2, GraduationCap, Heart, Landmark } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useCMS } from "@/contexts/CMSContext";
 import { EditableText } from "@/components/cms/EditableText";
+import { useTranslation } from "react-i18next";
 
 const Partnerships = () => {
     const [selectedType, setSelectedType] = useState<string>("all");
     const { loadPageContent } = useCMS();
+    const { t } = useTranslation();
 
     useEffect(() => {
         loadPageContent('partnerships');
     }, []);
 
     const types = [
-        { value: "all", label: "All Partners", icon: Building2 },
-        { value: "corporate", label: "Corporate", icon: Building2 },
-        { value: "educational", label: "Educational", icon: GraduationCap },
-        { value: "nonprofit", label: "Non-Profit", icon: Heart },
-        { value: "government", label: "Government", icon: Landmark },
+        { value: "all", label: t('partnerships.all_partners', "All Partners"), icon: Building2 },
+        { value: "corporate", label: t('partnerships.corporate', "Corporate"), icon: Building2 },
+        { value: "educational", label: t('partnerships.educational', "Educational"), icon: GraduationCap },
+        { value: "nonprofit", label: t('partnerships.nonprofit', "Non-Profit"), icon: Heart },
+        { value: "government", label: t('partnerships.government', "Government"), icon: Landmark },
     ];
 
     const filteredPartners = selectedType === "all"
@@ -55,14 +57,14 @@ const Partnerships = () => {
                             <EditableText
                                 pageName="partnerships"
                                 contentKey="hero_title"
-                                defaultValue="Our Partners"
+                                defaultValue={t('partnerships.hero_title', "Our Partners")}
                                 as="h1"
                                 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6"
                             />
                             <EditableText
                                 pageName="partnerships"
                                 contentKey="hero_subtitle"
-                                defaultValue="DirectEd Development Foundation's impact is amplified through strategic partnerships with leading corporations, educational institutions, nonprofits, and government agencies committed to transforming lives through education."
+                                defaultValue={t('partnerships.hero_subtitle', "DirectEd Development Foundation's impact is amplified through strategic partnerships with leading corporations, educational institutions, nonprofits, and government agencies committed to transforming lives through education.")}
                                 as="p"
                                 className="text-xl text-primary-foreground/90 leading-relaxed"
                             />
@@ -192,19 +194,17 @@ const Partnerships = () => {
                             className="max-w-3xl mx-auto text-center"
                         >
                             <h2 className="font-serif text-3xl md:text-4xl font-bold text-primary-foreground mb-6">
-                                Become a Partner
+                                {t('partnerships.become_partner', "Become a Partner")}
                             </h2>
                             <p className="text-lg text-primary-foreground/90 mb-8 leading-relaxed">
-                                Join us in creating opportunities and transforming lives. Whether you're a corporation
-                                looking to hire talent, an educational institution seeking collaboration, or an organization
-                                aligned with our mission, we'd love to partner with you.
+                                {t('partnerships.become_partner_desc', "Join us in creating opportunities and transforming lives. Whether you're a corporation looking to hire talent, an educational institution seeking collaboration, or an organization aligned with our mission, we'd love to partner with you.")}
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
                                 <button className="px-8 py-3 bg-accent text-white rounded-lg font-medium hover:bg-accent/90 transition-colors">
-                                    Partner With Us
+                                    {t('partnerships.partner_btn', "Partner With Us")}
                                 </button>
                                 <button className="px-8 py-3 bg-transparent border-2 border-primary-foreground text-primary-foreground rounded-lg font-medium hover:bg-primary-foreground/10 transition-colors">
-                                    Learn More
+                                    {t('common.learn_more', "Learn More")}
                                 </button>
                             </div>
                         </motion.div>

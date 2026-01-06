@@ -7,9 +7,11 @@ import { Linkedin, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCMS } from "@/contexts/CMSContext";
 import { EditableText } from "@/components/cms/EditableText";
+import { useTranslation } from "react-i18next";
 
 const Team = () => {
     const { loadPageContent } = useCMS();
+    const { t } = useTranslation();
 
     useEffect(() => {
         loadPageContent('team');
@@ -19,10 +21,10 @@ const Team = () => {
     const otherTeam = teamMembers.filter(member => member.department !== 'leadership');
 
     const departments = [
-        { id: 'programs', name: 'Programs', description: 'Delivering world-class training and student success' },
-        { id: 'partnerships', name: 'Partnerships', description: 'Building bridges to global opportunities' },
-        { id: 'operations', name: 'Operations', description: 'Ensuring organizational excellence' },
-        { id: 'technology', name: 'Technology', description: 'Powering our learning platforms' }
+        { id: 'programs', name: t('team.dept_programs', 'Programs'), description: t('team.dept_programs_desc', 'Delivering world-class training and student success') },
+        { id: 'partnerships', name: t('team.dept_partnerships', 'Partnerships'), description: t('team.dept_partnerships_desc', 'Building bridges to global opportunities') },
+        { id: 'operations', name: t('team.dept_operations', 'Operations'), description: t('team.dept_operations_desc', 'Ensuring organizational excellence') },
+        { id: 'technology', name: t('team.dept_technology', 'Technology'), description: t('team.dept_technology_desc', 'Powering our learning platforms') }
     ];
 
     const TeamMemberCard = ({ member }: { member: TeamMember }) => (
@@ -97,14 +99,14 @@ const Team = () => {
                             <EditableText
                                 pageName="team"
                                 contentKey="hero_title"
-                                defaultValue="Our Team"
+                                defaultValue={t('team.hero_title', "Our Team")}
                                 as="h1"
                                 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6"
                             />
                             <EditableText
                                 pageName="team"
                                 contentKey="hero_subtitle"
-                                defaultValue="Meet the dedicated professionals working tirelessly to transform lives through education and create opportunities for Africa's next generation of tech leaders."
+                                defaultValue={t('team.hero_subtitle', "Meet the dedicated professionals working tirelessly to transform lives through education and create opportunities for Africa's next generation of tech leaders.")}
                                 as="p"
                                 className="text-xl text-primary-foreground/90 leading-relaxed"
                             />
@@ -122,13 +124,13 @@ const Team = () => {
                             className="text-center mb-16"
                         >
                             <div className="inline-block px-4 py-1.5 bg-accent/10 rounded-full mb-6">
-                                <span className="text-sm font-medium text-accent">Leadership</span>
+                                <span className="text-sm font-medium text-accent">{t('team.leadership_badge', 'Leadership')}</span>
                             </div>
                             <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4">
-                                Executive Leadership
+                                {t('team.executive_leadership', 'Executive Leadership')}
                             </h2>
                             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                                Visionary leaders guiding DirectEd Development Foundation's mission and strategic direction
+                                {t('team.leadership_desc', "Visionary leaders guiding DirectEd Development Foundation's mission and strategic direction")}
                             </p>
                             <div className="section-divider mt-6" />
                         </motion.div>
@@ -189,18 +191,17 @@ const Team = () => {
                             className="max-w-3xl mx-auto text-center"
                         >
                             <h2 className="font-serif text-3xl md:text-4xl font-bold text-primary-foreground mb-6">
-                                Join Our Team
+                                {t('team.join_team', 'Join Our Team')}
                             </h2>
                             <p className="text-lg text-primary-foreground/90 mb-8 leading-relaxed">
-                                We're always looking for talented, passionate individuals who want to make a difference.
-                                Join us in transforming lives through education.
+                                {t('team.join_desc', "We're always looking for talented, passionate individuals who want to make a difference. Join us in transforming lives through education.")}
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
                                 <Button variant="accent" size="lg">
-                                    View Open Positions
+                                    {t('team.view_positions', 'View Open Positions')}
                                 </Button>
                                 <Button variant="outline" size="lg" className="bg-transparent border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10">
-                                    Learn About Working Here
+                                    {t('team.learn_working', 'Learn About Working Here')}
                                 </Button>
                             </div>
                         </motion.div>

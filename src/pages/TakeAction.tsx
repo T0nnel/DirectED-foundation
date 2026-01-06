@@ -9,9 +9,11 @@ import { useCMS } from "@/contexts/CMSContext";
 import { EditableText } from "@/components/cms/EditableText";
 import { EditableImage } from "@/components/cms/EditableImage";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 const TakeAction = () => {
   const { loadPageContent } = useCMS();
+  const { t } = useTranslation();
 
   useEffect(() => {
     loadPageContent('takeaction');
@@ -20,27 +22,27 @@ const TakeAction = () => {
   const actions = [
     {
       icon: <Heart className="w-8 h-8" />,
-      title: "Donate",
-      description: "Your contribution directly funds scholarships, training resources, and program expansion.",
-      cta: "Donate Now",
+      title: t('takeaction.donate', "Donate"),
+      description: t('takeaction.donate_desc', "Your contribution directly funds scholarships, training resources, and program expansion."),
+      cta: t('takeaction.donate_cta', "Donate Now"),
     },
     {
       icon: <Users className="w-8 h-8" />,
-      title: "Volunteer",
-      description: "Share your expertise as a mentor, instructor, or career advisor for our students.",
-      cta: "Join as Volunteer",
+      title: t('takeaction.volunteer', "Volunteer"),
+      description: t('takeaction.volunteer_desc', "Share your expertise as a mentor, instructor, or career advisor for our students."),
+      cta: t('takeaction.volunteer_cta', "Join as Volunteer"),
     },
     {
       icon: <Megaphone className="w-8 h-8" />,
-      title: "Advocate",
-      description: "Help spread the word about our mission and the importance of tech education.",
-      cta: "Become an Advocate",
+      title: t('takeaction.advocate', "Advocate"),
+      description: t('takeaction.advocate_desc', "Help spread the word about our mission and the importance of tech education."),
+      cta: t('takeaction.advocate_cta', "Become an Advocate"),
     },
     {
       icon: <Building className="w-8 h-8" />,
-      title: "Partner",
-      description: "Organizations can partner with us for internship placements and corporate sponsorship.",
-      cta: "Explore Partnership",
+      title: t('takeaction.partner', "Partner"),
+      description: t('takeaction.partner_desc', "Organizations can partner with us for internship placements and corporate sponsorship."),
+      cta: t('takeaction.partner_cta', "Explore Partnership"),
     },
   ];
 
@@ -61,14 +63,14 @@ const TakeAction = () => {
               <EditableText
                 pageName="takeaction"
                 contentKey="hero_title"
-                defaultValue="Take Action"
+                defaultValue={t('takeaction.hero_title', "Take Action")}
                 as="h1"
                 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6"
               />
               <EditableText
                 pageName="takeaction"
                 contentKey="hero_subtitle"
-                defaultValue="Join us in creating opportunities for Africa's next generation of tech leaders. There are many ways to make a difference."
+                defaultValue={t('takeaction.hero_subtitle', "Join us in creating opportunities for Africa's next generation of tech leaders. There are many ways to make a difference.")}
                 as="p"
                 className="text-xl text-primary-foreground/80"
               />
@@ -109,10 +111,10 @@ const TakeAction = () => {
 
         {/* CTA */}
         <CTASection
-          title="Ready to Make a Difference?"
-          description="Every contribution, big or small, helps us expand our reach and transform more lives."
-          primaryCta={{ label: "Donate Now", href: "/donate" }}
-          secondaryCta={{ label: "Contact Us", href: "/contact" }}
+          title={t('takeaction.cta_title', "Ready to Make a Difference?")}
+          description={t('takeaction.cta_desc', "Every contribution, big or small, helps us expand our reach and transform more lives.")}
+          primaryCta={{ label: t('takeaction.cta_primary', "Donate Now"), href: "/donate" }}
+          secondaryCta={{ label: t('takeaction.cta_secondary', "Contact Us"), href: "/contact" }}
           backgroundImage={hero3}
         />
       </main>

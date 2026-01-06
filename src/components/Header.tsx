@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Menu, X, Search, Globe, User, LogOut, LogIn, Edit3, Pencil } from "lucide-react";
+import { ChevronDown, Menu, X, Search, Globe, User, LogOut, Edit3, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoImage from "@/assets/Facebook profile-01.jpg";
 import { useTranslation } from "react-i18next";
@@ -232,15 +232,7 @@ export const Header = () => {
                   )}
                 </AnimatePresence>
               </>
-            ) : (
-              <Link
-                to="/auth"
-                className="flex items-center gap-2 hover:text-accent transition-colors"
-              >
-                <LogIn className="w-4 h-4" />
-                <span>{t('nav.login', 'Login')}</span>
-              </Link>
-            )}
+            ) : null}
           </div>
         </div>
       </div>

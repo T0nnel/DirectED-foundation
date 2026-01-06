@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useState, useRef } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import { useCMS } from '@/contexts/CMSContext';
 import { createPortal } from 'react-dom';
 import { Check, X, Pencil, Loader2, CheckCircle, XCircle } from 'lucide-react';
@@ -78,6 +78,11 @@ function isExcludedElement(element: HTMLElement): boolean {
         return true;
     }
     
+    // Skip the hero carousel - it's not editable
+    if (element.closest('[data-hero-carousel]')) {
+        return true;
+    }
+    
     return false;
 }
 
@@ -150,7 +155,6 @@ export function GlobalEditMode() {
     const [isSaving, setIsSaving] = useState(false);
     const [savedContent, setSavedContent] = useState<SavedContent>({});
     const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
-    const appliedElements = useRef<Set<string>>(new Set());
     
     // Auto-hide toast after 3 seconds
     useEffect(() => {
@@ -166,14 +170,14 @@ export function GlobalEditMode() {
             const pageName = getPageName();
             const storageKey = `cms_content_${pageName}_${currentLanguage}`;
             
-            console.log('[CMS] Loading saved content for page:', pageName, 'language:', currentLanguage);
+            // Loading saved content silently
             
             let contentMap: SavedContent = {};
             
             // First, try to load from database (visible to ALL visitors)
             try {
                 const content = await fetchPageContent(pageName, currentLanguage);
-                console.log('[CMS] Loaded from database:', content.length, 'items');
+                // Loaded from database
                 
                 content.forEach((item: PageContent) => {
                     if (item.content_key.startsWith('global_')) {
@@ -199,7 +203,7 @@ export function GlobalEditMode() {
                     }
                 });
             } catch (error) {
-                console.log('[CMS] Database not available, falling back to localStorage');
+                // Database not available, will use localStorage
             }
             
             // Fallback: load from localStorage if database didn't have content
@@ -215,7 +219,7 @@ export function GlobalEditMode() {
                                 contentMap[key] = value as SavedContentEntry;
                             }
                         });
-                        console.log('[CMS] Loaded from localStorage fallback:', Object.keys(contentMap).length, 'items');
+                        // Loaded from localStorage fallback
                     } catch (e) {
                         console.error('[CMS] Failed to parse localStorage content');
                     }
@@ -223,8 +227,6 @@ export function GlobalEditMode() {
             }
             
             setSavedContent(contentMap);
-            appliedElements.current = new Set();
-            console.log('[CMS] Total content items to apply:', Object.keys(contentMap).length);
         };
 
         loadSavedContent();
@@ -232,12 +234,7 @@ export function GlobalEditMode() {
 
     // Apply saved content to DOM elements
     useEffect(() => {
-        if (Object.keys(savedContent).length === 0) {
-            console.log('[CMS] No saved content to apply');
-            return;
-        }
-
-        console.log('[CMS] Applying saved content, keys available:', Object.keys(savedContent));
+        if (Object.keys(savedContent).length === 0) return;
         
         // Create a map of original text → saved entry for quick matching
         const originalTextMap = new Map<string, { key: string; entry: SavedContentEntry }>();
@@ -246,58 +243,97 @@ export function GlobalEditMode() {
                 originalTextMap.set(entry.originalText.trim(), { key, entry });
             }
         });
-        console.log('[CMS] Original text entries to match:', originalTextMap.size);
+        
+        // Track which actual DOM elements have been processed (using WeakSet for memory efficiency)
+        const processedElements = new WeakSet<HTMLElement>();
 
-        const applyContentToElement = (element: HTMLElement) => {
+        const applyContentToElement = (element: HTMLElement, animate: boolean = true) => {
+            // Skip if this exact DOM element was already processed
+            if (processedElements.has(element)) return;
+            
+            // Skip hero carousel - it's handled by Index.tsx via React state
+            if (element.closest('[data-hero-carousel]')) return;
+            
             if (!isEditableTextElement(element)) return;
             
             const currentText = element.textContent?.trim() || '';
             
-            // Skip if already applied
-            if (appliedElements.current.has(currentText)) return;
-            
             // Try to match by original text
             const match = originalTextMap.get(currentText);
             if (match) {
-                console.log('[CMS] ✅ Matched by original text:', currentText.slice(0, 30), '→', match.entry.newText.slice(0, 30));
-                element.textContent = match.entry.newText;
-                appliedElements.current.add(currentText);
+                processedElements.add(element);
+                
+                if (animate) {
+                    // Smooth transition for initial load
+                    element.style.transition = 'opacity 0.15s ease-in-out';
+                    element.style.opacity = '0';
+                    
+                    requestAnimationFrame(() => {
+                        element.textContent = match.entry.newText;
+                        requestAnimationFrame(() => {
+                            element.style.opacity = '1';
+                            setTimeout(() => {
+                                element.style.transition = '';
+                                element.style.opacity = '';
+                            }, 150);
+                        });
+                    });
+                } else {
+                    // Instant update for dynamically added elements (carousels, etc.)
+                    element.textContent = match.entry.newText;
+                }
                 return;
             }
             
             // Also try matching by key (for backward compatibility)
             const contentKey = generateContentKey(element);
             if (savedContent[contentKey]?.newText) {
-                console.log('[CMS] ✅ Matched by key:', contentKey);
-                element.textContent = savedContent[contentKey].newText;
-                appliedElements.current.add(currentText);
+                processedElements.add(element);
+                
+                if (animate) {
+                    element.style.transition = 'opacity 0.15s ease-in-out';
+                    element.style.opacity = '0';
+                    
+                    requestAnimationFrame(() => {
+                        element.textContent = savedContent[contentKey].newText;
+                        requestAnimationFrame(() => {
+                            element.style.opacity = '1';
+                            setTimeout(() => {
+                                element.style.transition = '';
+                                element.style.opacity = '';
+                            }, 150);
+                        });
+                    });
+                } else {
+                    element.textContent = savedContent[contentKey].newText;
+                }
             }
         };
         
-        // Small delay to let the page render first
+        // Apply content quickly after page loads
         const timeoutId = setTimeout(() => {
-            // Apply to all editable elements
             const editableTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span', 'li', 'label'];
             editableTags.forEach(tag => {
                 document.querySelectorAll(tag).forEach(el => {
-                    applyContentToElement(el as HTMLElement);
+                    applyContentToElement(el as HTMLElement, true);
                 });
             });
-            console.log('[CMS] Finished initial content application, applied:', appliedElements.current.size, 'elements');
-        }, 100);
+        }, 50);
 
-        // Observe DOM changes to apply content to newly added elements
+        // Observe DOM changes to apply content to newly added elements (like carousel slides)
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 mutation.addedNodes.forEach((node) => {
                     if (node.nodeType === Node.ELEMENT_NODE) {
                         const element = node as HTMLElement;
-                        applyContentToElement(element);
-                        // Also check children
+                        // For dynamically added elements, apply without animation
+                        applyContentToElement(element, false);
+                        
+                        // Also check all children
                         const editableTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span', 'li', 'label'];
                         editableTags.forEach(tag => {
                             element.querySelectorAll(tag).forEach(el => {
-                                applyContentToElement(el as HTMLElement);
+                                applyContentToElement(el as HTMLElement, false);
                             });
                         });
                     }
@@ -384,37 +420,40 @@ export function GlobalEditMode() {
         const pageName = getPageName();
         const storageKey = `cms_content_${pageName}_${currentLanguage}`;
         
-        console.log('[CMS] Saving content:', {
-            pageName,
-            contentKey: editorState.contentKey,
-            text: editText.slice(0, 50) + '...',
-            language: currentLanguage
-        });
+        // Read existing content from localStorage to ensure we don't lose previous edits
+        let existingContent: SavedContent = {};
+        try {
+            const stored = localStorage.getItem(storageKey);
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                Object.entries(parsed).forEach(([key, value]) => {
+                    if (typeof value === 'object' && value !== null) {
+                        existingContent[key] = value as SavedContentEntry;
+                    }
+                });
+            }
+        } catch (e) {
+            // Ignore parse errors
+        }
         
-        // Always save to localStorage first (guaranteed to work)
-        // Store both the new text AND the original text for matching on reload
+        // Merge with new content (always preserves previous edits)
         const newSavedContent: SavedContent = {
-            ...savedContent,
+            ...existingContent,
             [editorState.contentKey]: {
                 newText: editText,
                 originalText: editorState.originalText
             }
         };
         localStorage.setItem(storageKey, JSON.stringify(newSavedContent));
-        console.log('[CMS] Saved to localStorage:', {
-            key: editorState.contentKey,
-            original: editorState.originalText.slice(0, 30),
-            new: editText.slice(0, 30)
-        });
+        
+        // Dispatch custom event so other components can reload content (e.g., Index.tsx for hero carousel)
+        window.dispatchEvent(new CustomEvent('cms-content-saved'));
         
         // Update the element visually
         editorState.element.textContent = editText;
         
         // Update local saved content cache
         setSavedContent(newSavedContent);
-        
-        // Mark as applied
-        appliedElements.current.add(editorState.contentKey);
         
         // Save to database (so ALL visitors can see changes)
         try {
@@ -431,11 +470,9 @@ export function GlobalEditMode() {
                 contentValue,
                 currentLanguage
             );
-            console.log('[CMS] Saved to database (visible to all):', result);
-            setToast({ message: 'Content saved! Visible to all visitors.', type: 'success' });
+            setToast({ message: 'Content saved!', type: 'success' });
         } catch (error) {
-            console.log('[CMS] Database save failed:', error);
-            setToast({ message: 'Saved locally only. Run SQL setup for global visibility.', type: 'success' });
+            setToast({ message: 'Saved locally', type: 'success' });
         }
         
         setEditorState(null);

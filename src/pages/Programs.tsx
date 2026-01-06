@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { MapPin, ArrowRight, Image as ImageIcon } from 'lucide-react';
 import { useCMS } from '@/contexts/CMSContext';
 import { EditableText } from '@/components/cms/EditableText';
+import { useTranslation } from 'react-i18next';
 
 interface ProgramListing {
   id: string;
@@ -26,6 +27,7 @@ const Programs = () => {
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const { loadPageContent } = useCMS();
+  const { t } = useTranslation();
 
   useEffect(() => {
     loadPageContent('programs');
@@ -69,14 +71,14 @@ const Programs = () => {
             <EditableText
               pageName="programs"
               contentKey="hero_title"
-              defaultValue="Our Programs"
+              defaultValue={t('programs.hero_title', "Our Programs")}
               as="h1"
               className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold mb-6"
             />
             <EditableText
               pageName="programs"
               contentKey="hero_subtitle"
-              defaultValue="Discover our initiatives making a difference in communities around the world. Each program is designed to create lasting, sustainable impact."
+              defaultValue={t('programs.hero_subtitle', "Discover our initiatives making a difference in communities around the world. Each program is designed to create lasting, sustainable impact.")}
               as="p"
               className="text-lg md:text-xl opacity-90 leading-relaxed"
             />
@@ -94,7 +96,7 @@ const Programs = () => {
                 size="sm"
                 onClick={() => setSelectedCategory(null)}
               >
-                All Programs
+                {t('programs.all_programs', 'All Programs')}
               </Button>
               {categories.map((category) => (
                 <Button
@@ -131,9 +133,9 @@ const Programs = () => {
           ) : filteredListings.length === 0 ? (
             <div className="text-center py-16">
               <ImageIcon className="mx-auto h-16 w-16 text-muted-foreground mb-4" />
-              <h3 className="font-serif text-2xl font-semibold mb-2">No programs available</h3>
+              <h3 className="font-serif text-2xl font-semibold mb-2">{t('programs.no_programs', 'No programs available')}</h3>
               <p className="text-muted-foreground">
-                Check back soon for new programs and initiatives.
+                {t('programs.check_back', 'Check back soon for new programs and initiatives.')}
               </p>
             </div>
           ) : (
@@ -180,7 +182,7 @@ const Programs = () => {
                           </div>
                         )}
                         <div className="flex items-center text-primary font-medium">
-                          Learn more
+                          {t('common.learn_more', 'Learn more')}
                           <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                         </div>
                       </CardContent>

@@ -4,9 +4,11 @@ import { motion } from "framer-motion";
 import { useCMS } from "@/contexts/CMSContext";
 import { EditableText } from "@/components/cms/EditableText";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 const Research = () => {
   const { loadPageContent } = useCMS();
+  const { t } = useTranslation();
 
   useEffect(() => {
     loadPageContent('research');
@@ -29,14 +31,14 @@ const Research = () => {
               <EditableText
                 pageName="research"
                 contentKey="hero_title"
-                defaultValue="Research & Reports"
+                defaultValue={t('research.hero_title', "Research & Reports")}
                 as="h1"
                 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6"
               />
               <EditableText
                 pageName="research"
                 contentKey="hero_subtitle"
-                defaultValue="Evidence-based insights driving our mission to transform tech education in Africa."
+                defaultValue={t('research.hero_subtitle', "Evidence-based insights driving our mission to transform tech education in Africa.")}
                 as="p"
                 className="text-xl text-primary-foreground/80"
               />
@@ -50,7 +52,7 @@ const Research = () => {
             <EditableText
               pageName="research"
               contentKey="content_title"
-              defaultValue="Research publications coming soon..."
+              defaultValue={t('research.coming_soon', "Research publications coming soon...")}
               as="h2"
               className="font-serif text-3xl font-bold text-foreground text-center"
             />

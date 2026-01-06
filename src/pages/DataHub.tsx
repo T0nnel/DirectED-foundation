@@ -4,17 +4,19 @@ import { motion } from "framer-motion";
 import { impactStats, impactStories, getStatsByCategory } from "@/data/impactData";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const DataHub = () => {
     const [selectedCategory, setSelectedCategory] = useState<string>("all");
+    const { t } = useTranslation();
 
     const categories = [
-        { value: "all", label: "All Statistics" },
-        { value: "education", label: "Education" },
-        { value: "employment", label: "Employment" },
-        { value: "reach", label: "Reach" },
-        { value: "partners", label: "Partnerships" },
-        { value: "financial", label: "Financial" },
+        { value: "all", label: t('datahub.all_stats', "All Statistics") },
+        { value: "education", label: t('datahub.education', "Education") },
+        { value: "employment", label: t('datahub.employment', "Employment") },
+        { value: "reach", label: t('datahub.reach', "Reach") },
+        { value: "partners", label: t('datahub.partnerships', "Partnerships") },
+        { value: "financial", label: t('datahub.financial', "Financial") },
     ];
 
     const filteredStats = selectedCategory === "all"
@@ -58,11 +60,10 @@ const DataHub = () => {
                             className="max-w-3xl"
                         >
                             <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6">
-                                Data & Impact Statistics
+                                {t('datahub.hero_title', "Data & Impact Statistics")}
                             </h1>
                             <p className="text-xl text-primary-foreground/90 leading-relaxed">
-                                Transparent, data-driven insights into DirectEd Development Foundation's impact. Explore our key metrics,
-                                trends, and the tangible difference we're making in education and employment.
+                                {t('datahub.hero_subtitle', "Transparent, data-driven insights into DirectEd Development Foundation's impact. Explore our key metrics, trends, and the tangible difference we're making in education and employment.")}
                             </p>
                         </motion.div>
                     </div>
@@ -141,13 +142,13 @@ const DataHub = () => {
                             className="text-center mb-16"
                         >
                             <div className="inline-block px-4 py-1.5 bg-accent/10 rounded-full mb-6">
-                                <span className="text-sm font-medium text-accent">Impact Stories</span>
+                                <span className="text-sm font-medium text-accent">{t('datahub.impact_stories', "Impact Stories")}</span>
                             </div>
                             <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4">
-                                Behind the Numbers
+                                {t('datahub.behind_numbers', "Behind the Numbers")}
                             </h2>
                             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                                Real stories of transformation from our graduates
+                                {t('datahub.stories_subtitle', "Real stories of transformation from our graduates")}
                             </p>
                         </motion.div>
 
@@ -204,18 +205,17 @@ const DataHub = () => {
                             className="max-w-3xl mx-auto text-center"
                         >
                             <h2 className="font-serif text-3xl md:text-4xl font-bold text-primary-foreground mb-6">
-                                Committed to Transparency
+                                {t('datahub.transparency_title', "Committed to Transparency")}
                             </h2>
                             <p className="text-lg text-primary-foreground/90 mb-8 leading-relaxed">
-                                We believe in full transparency and accountability. All our data, impact metrics,
-                                and financial information are publicly available.
+                                {t('datahub.transparency_desc', "We believe in full transparency and accountability. All our data, impact metrics, and financial information are publicly available.")}
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
                                 <button className="px-8 py-3 bg-accent text-white rounded-lg font-medium hover:bg-accent/90 transition-colors">
-                                    Download Full Report
+                                    {t('datahub.download_report', "Download Full Report")}
                                 </button>
                                 <button className="px-8 py-3 bg-transparent border-2 border-primary-foreground text-primary-foreground rounded-lg font-medium hover:bg-primary-foreground/10 transition-colors">
-                                    View Annual Reports
+                                    {t('datahub.view_annual', "View Annual Reports")}
                                 </button>
                             </div>
                         </motion.div>

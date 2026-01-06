@@ -8,23 +8,25 @@ import { FileText, Calendar, Download, ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useCMS } from "@/contexts/CMSContext";
 import { EditableText } from "@/components/cms/EditableText";
+import { useTranslation } from "react-i18next";
 
 const Publications = () => {
     const [selectedType, setSelectedType] = useState<string>("all");
     const [selectedYear, setSelectedYear] = useState<number | "all">("all");
     const { loadPageContent } = useCMS();
+    const { t } = useTranslation();
 
     useEffect(() => {
         loadPageContent('publications');
     }, []);
 
     const types: { value: string; label: string }[] = [
-        { value: "all", label: "All Publications" },
-        { value: "annual-report", label: "Annual Reports" },
-        { value: "impact-report", label: "Impact Reports" },
-        { value: "research", label: "Research Papers" },
-        { value: "case-study", label: "Case Studies" },
-        { value: "whitepaper", label: "Whitepapers" },
+        { value: "all", label: t('publications.all', "All Publications") },
+        { value: "annual-report", label: t('publications.annual_reports', "Annual Reports") },
+        { value: "impact-report", label: t('publications.impact_reports', "Impact Reports") },
+        { value: "research", label: t('publications.research_papers', "Research Papers") },
+        { value: "case-study", label: t('publications.case_studies', "Case Studies") },
+        { value: "whitepaper", label: t('publications.whitepapers', "Whitepapers") },
     ];
 
     const years = ["all", ...Array.from(new Set(publications.map(p => p.year))).sort((a, b) => b - a)];
@@ -63,14 +65,14 @@ const Publications = () => {
                             <EditableText
                                 pageName="publications"
                                 contentKey="hero_title"
-                                defaultValue="Publications & Reports"
+                                defaultValue={t('publications.hero_title', "Publications & Reports")}
                                 as="h1"
                                 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6"
                             />
                             <EditableText
                                 pageName="publications"
                                 contentKey="hero_subtitle"
-                                defaultValue="Explore our research, annual reports, case studies, and impact analyses documenting DirectEd Development Foundation's work and the transformative power of education."
+                                defaultValue={t('publications.hero_subtitle', "Explore our research, annual reports, case studies, and impact analyses documenting DirectEd Development Foundation's work and the transformative power of education.")}
                                 as="p"
                                 className="text-xl text-primary-foreground/90 leading-relaxed"
                             />
@@ -84,7 +86,7 @@ const Publications = () => {
                         <div className="flex flex-col md:flex-row gap-4">
                             <div className="flex-1">
                                 <label className="text-sm font-medium text-muted-foreground mb-2 block">
-                                    Publication Type
+                                    {t('publications.type_label', "Publication Type")}
                                 </label>
                                 <select
                                     value={selectedType}
@@ -100,7 +102,7 @@ const Publications = () => {
                             </div>
                             <div className="w-full md:w-48">
                                 <label className="text-sm font-medium text-muted-foreground mb-2 block">
-                                    Year
+                                    {t('publications.year_label', "Year")}
                                 </label>
                                 <select
                                     value={selectedYear}
@@ -201,16 +203,16 @@ const Publications = () => {
                             <div className="text-center py-16">
                                 <FileText className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
                                 <h3 className="font-serif text-2xl font-bold text-foreground mb-2">
-                                    No Publications Found
+                                    {t('publications.no_publications', "No Publications Found")}
                                 </h3>
                                 <p className="text-muted-foreground mb-6">
-                                    Try adjusting your filters to see more results.
+                                    {t('publications.adjust_filters', "Try adjusting your filters to see more results.")}
                                 </p>
                                 <Button onClick={() => {
                                     setSelectedType("all");
                                     setSelectedYear("all");
                                 }}>
-                                    Reset Filters
+                                    {t('publications.reset_filters', "Reset Filters")}
                                 </Button>
                             </div>
                         )}

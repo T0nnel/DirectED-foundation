@@ -8,27 +8,29 @@ import { Target, Eye, Heart, Users, GraduationCap, Globe, Briefcase } from "luci
 import { useCMS } from "@/contexts/CMSContext";
 import { EditableText } from "@/components/cms/EditableText";
 import { EditableImage } from "@/components/cms/EditableImage";
+import { useTranslation } from "react-i18next";
 import content1 from "@/assets/image4.jpg";
 import content2 from "@/assets/image8.jpg";
 
 const About = () => {
   const { loadPageContent } = useCMS();
+  const { t } = useTranslation();
 
   useEffect(() => {
     loadPageContent('about');
   }, []);
 
   const stats = [
-    { value: "500+", label: "Students Trained", icon: <GraduationCap className="w-8 h-8 text-accent" /> },
-    { value: "15", label: "Partner Schools", icon: <Globe className="w-8 h-8 text-accent" /> },
-    { value: "200+", label: "Job Placements", icon: <Briefcase className="w-8 h-8 text-accent" /> },
-    { value: "50+", label: "Corporate Partners", icon: <Users className="w-8 h-8 text-accent" /> },
+    { value: "500+", label: t('stats.students_trained', "Students Trained"), icon: <GraduationCap className="w-8 h-8 text-accent" /> },
+    { value: "15", label: t('stats.partner_schools', "Partner Schools"), icon: <Globe className="w-8 h-8 text-accent" /> },
+    { value: "200+", label: t('stats.job_placements', "Job Placements"), icon: <Briefcase className="w-8 h-8 text-accent" /> },
+    { value: "50+", label: t('stats.corporate_partners', "Corporate Partners"), icon: <Users className="w-8 h-8 text-accent" /> },
   ];
 
   const values = [
-    { icon: <Target className="w-8 h-8" />, title: "Excellence", desc: "We strive for the highest standards in everything we do" },
-    { icon: <Heart className="w-8 h-8" />, title: "Compassion", desc: "We care deeply about the communities we serve" },
-    { icon: <Eye className="w-8 h-8" />, title: "Transparency", desc: "We operate with openness and accountability" },
+    { icon: <Target className="w-8 h-8" />, title: t('values.excellence', "Excellence"), desc: t('values.excellence_desc', "We strive for the highest standards in everything we do") },
+    { icon: <Heart className="w-8 h-8" />, title: t('values.compassion', "Compassion"), desc: t('values.compassion_desc', "We care deeply about the communities we serve") },
+    { icon: <Eye className="w-8 h-8" />, title: t('values.transparency', "Transparency"), desc: t('values.transparency_desc', "We operate with openness and accountability") },
   ];
 
   return (
@@ -48,14 +50,14 @@ const About = () => {
               <EditableText
                 pageName="about"
                 contentKey="hero_title"
-                defaultValue="Who We Are"
+                defaultValue={t('about.hero_title', "Who We Are")}
                 as="h1"
                 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6"
               />
               <EditableText
                 pageName="about"
                 contentKey="hero_subtitle"
-                defaultValue="A mission-driven organization dedicated to empowering Africa's next generation of tech leaders."
+                defaultValue={t('about.hero_subtitle', "A mission-driven organization dedicated to empowering Africa's next generation of tech leaders.")}
                 as="p"
                 className="text-xl text-primary-foreground/80"
               />
@@ -80,26 +82,26 @@ const About = () => {
                 viewport={{ once: true }}
               >
                 <span className="inline-block px-4 py-1.5 bg-accent/10 text-accent text-sm font-medium rounded-full mb-4">
-                  Our Vision
+                  {t('about.our_vision', 'Our Vision')}
                 </span>
                 <EditableText
                   pageName="about"
                   contentKey="vision_title"
-                  defaultValue="A World Where Potential Knows No Boundaries"
+                  defaultValue={t('about.vision_title', "A World Where Potential Knows No Boundaries")}
                   as="h2"
                   className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-6"
                 />
                 <EditableText
                   pageName="about"
                   contentKey="vision_description_1"
-                  defaultValue="We believe that every person deserves the opportunity to realize their full potential, regardless of where they were born. Our vision is a world where talent, not geography, determines success."
+                  defaultValue={t('about.vision_desc_1', "We believe that every person deserves the opportunity to realize their full potential, regardless of where they were born. Our vision is a world where talent, not geography, determines success.")}
                   as="p"
                   className="text-lg text-muted-foreground mb-6"
                 />
                 <EditableText
                   pageName="about"
                   contentKey="vision_description_2"
-                  defaultValue="Through world-class education and direct connections to global opportunities, we're breaking down barriers and building bridges to brighter futures."
+                  defaultValue={t('about.vision_desc_2', "Through world-class education and direct connections to global opportunities, we're breaking down barriers and building bridges to brighter futures.")}
                   as="p"
                   className="text-lg text-muted-foreground"
                 />
@@ -121,7 +123,7 @@ const About = () => {
               className="text-center mb-16"
             >
               <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4">
-                Our Values
+                {t('about.our_values', 'Our Values')}
               </h2>
               <div className="section-divider" />
             </motion.div>

@@ -50,7 +50,7 @@ export const HeroCarousel = ({ slides }: HeroCarouselProps) => {
   };
 
   return (
-    <section className="relative h-[85vh] min-h-[600px] overflow-hidden">
+    <section className="relative h-[85vh] min-h-[600px] overflow-hidden" data-hero-carousel>
       {/* Image slides with smooth crossfade */}
       <AnimatePresence initial={false}>
         {slides.map((slide, index) => (
