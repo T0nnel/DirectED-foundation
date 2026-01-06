@@ -1,16 +1,37 @@
-import { useEffect, useCallback, useState } from 'react';
+import { useEffect, useCallback, useState, useRef } from 'react';
 import { useCMS } from '@/contexts/CMSContext';
 import { createPortal } from 'react-dom';
-import { Check, X, Pencil } from 'lucide-react';
+import { Check, X, Pencil, Loader2, CheckCircle, XCircle } from 'lucide-react';
+import { upsertContent, fetchPageContent, PageContent } from '@/lib/supabase/content';
 
-// Generate a unique content key from element's text and position
+// Generate a stable content key from element's position in the DOM (NO text-based hash)
 function generateContentKey(element: HTMLElement): string {
-    const text = element.textContent?.slice(0, 50) || '';
     const tag = element.tagName.toLowerCase();
-    const className = element.className?.split(' ')[0] || '';
-    // Create a hash-like key
-    const hash = text.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    return `${tag}_${className}_${hash}`.replace(/[^a-zA-Z0-9_]/g, '_');
+    
+    // Create a stable path from element to body
+    const pathParts: string[] = [];
+    let current: HTMLElement | null = element;
+    let depth = 0;
+    
+    while (current && current !== document.body && depth < 8) {
+        const parent = current.parentElement;
+        if (parent) {
+            // Get index among siblings of the same tag type
+            const siblings = Array.from(parent.children).filter(
+                child => child.tagName === current!.tagName
+            );
+            const index = siblings.indexOf(current);
+            pathParts.unshift(`${current.tagName.toLowerCase()}${index}`);
+        } else {
+            pathParts.unshift(current.tagName.toLowerCase());
+        }
+        current = parent;
+        depth++;
+    }
+    
+    // Create a stable key based purely on DOM position
+    const path = pathParts.join('_');
+    return `global_${tag}_${path}`.replace(/[^a-zA-Z0-9_]/g, '_').slice(0, 100);
 }
 
 // Get the page name from current URL
@@ -107,14 +128,190 @@ function isEditableTextElement(element: HTMLElement): boolean {
 interface EditorState {
     element: HTMLElement;
     originalText: string;
+    contentKey: string;
     rect: DOMRect;
 }
 
+// Store content that has been loaded from database
+// Each entry has: { newText: string, originalText: string }
+interface SavedContentEntry {
+    newText: string;
+    originalText: string;
+}
+interface SavedContent {
+    [key: string]: SavedContentEntry;
+}
+
 export function GlobalEditMode() {
-    const { canEdit, isEditMode, isPreviewMode, updateContent } = useCMS();
+    const { canEdit, isEditMode, isPreviewMode, currentLanguage } = useCMS();
     const [hoveredElement, setHoveredElement] = useState<HTMLElement | null>(null);
     const [editorState, setEditorState] = useState<EditorState | null>(null);
     const [editText, setEditText] = useState('');
+    const [isSaving, setIsSaving] = useState(false);
+    const [savedContent, setSavedContent] = useState<SavedContent>({});
+    const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+    const appliedElements = useRef<Set<string>>(new Set());
+    
+    // Auto-hide toast after 3 seconds
+    useEffect(() => {
+        if (toast) {
+            const timer = setTimeout(() => setToast(null), 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [toast]);
+
+    // Load saved content from database (visible to ALL visitors)
+    useEffect(() => {
+        const loadSavedContent = async () => {
+            const pageName = getPageName();
+            const storageKey = `cms_content_${pageName}_${currentLanguage}`;
+            
+            console.log('[CMS] Loading saved content for page:', pageName, 'language:', currentLanguage);
+            
+            let contentMap: SavedContent = {};
+            
+            // First, try to load from database (visible to ALL visitors)
+            try {
+                const content = await fetchPageContent(pageName, currentLanguage);
+                console.log('[CMS] Loaded from database:', content.length, 'items');
+                
+                content.forEach((item: PageContent) => {
+                    if (item.content_key.startsWith('global_')) {
+                        // Database stores: content_key contains original text hash
+                        // content_value is the new text
+                        // We need to also store original text - check if it's JSON
+                        try {
+                            const parsed = JSON.parse(item.content_value);
+                            if (parsed.newText && parsed.originalText) {
+                                contentMap[item.content_key] = parsed;
+                            } else {
+                                contentMap[item.content_key] = { 
+                                    newText: item.content_value, 
+                                    originalText: '' 
+                                };
+                            }
+                        } catch {
+                            contentMap[item.content_key] = { 
+                                newText: item.content_value, 
+                                originalText: '' 
+                            };
+                        }
+                    }
+                });
+            } catch (error) {
+                console.log('[CMS] Database not available, falling back to localStorage');
+            }
+            
+            // Fallback: load from localStorage if database didn't have content
+            if (Object.keys(contentMap).length === 0) {
+                const localContent = localStorage.getItem(storageKey);
+                if (localContent) {
+                    try {
+                        const parsed = JSON.parse(localContent);
+                        Object.entries(parsed).forEach(([key, value]) => {
+                            if (typeof value === 'string') {
+                                contentMap[key] = { newText: value, originalText: '' };
+                            } else if (value && typeof value === 'object') {
+                                contentMap[key] = value as SavedContentEntry;
+                            }
+                        });
+                        console.log('[CMS] Loaded from localStorage fallback:', Object.keys(contentMap).length, 'items');
+                    } catch (e) {
+                        console.error('[CMS] Failed to parse localStorage content');
+                    }
+                }
+            }
+            
+            setSavedContent(contentMap);
+            appliedElements.current = new Set();
+            console.log('[CMS] Total content items to apply:', Object.keys(contentMap).length);
+        };
+
+        loadSavedContent();
+    }, [currentLanguage]);
+
+    // Apply saved content to DOM elements
+    useEffect(() => {
+        if (Object.keys(savedContent).length === 0) {
+            console.log('[CMS] No saved content to apply');
+            return;
+        }
+
+        console.log('[CMS] Applying saved content, keys available:', Object.keys(savedContent));
+        
+        // Create a map of original text → saved entry for quick matching
+        const originalTextMap = new Map<string, { key: string; entry: SavedContentEntry }>();
+        Object.entries(savedContent).forEach(([key, entry]) => {
+            if (entry.originalText) {
+                originalTextMap.set(entry.originalText.trim(), { key, entry });
+            }
+        });
+        console.log('[CMS] Original text entries to match:', originalTextMap.size);
+
+        const applyContentToElement = (element: HTMLElement) => {
+            if (!isEditableTextElement(element)) return;
+            
+            const currentText = element.textContent?.trim() || '';
+            
+            // Skip if already applied
+            if (appliedElements.current.has(currentText)) return;
+            
+            // Try to match by original text
+            const match = originalTextMap.get(currentText);
+            if (match) {
+                console.log('[CMS] ✅ Matched by original text:', currentText.slice(0, 30), '→', match.entry.newText.slice(0, 30));
+                element.textContent = match.entry.newText;
+                appliedElements.current.add(currentText);
+                return;
+            }
+            
+            // Also try matching by key (for backward compatibility)
+            const contentKey = generateContentKey(element);
+            if (savedContent[contentKey]?.newText) {
+                console.log('[CMS] ✅ Matched by key:', contentKey);
+                element.textContent = savedContent[contentKey].newText;
+                appliedElements.current.add(currentText);
+            }
+        };
+        
+        // Small delay to let the page render first
+        const timeoutId = setTimeout(() => {
+            // Apply to all editable elements
+            const editableTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span', 'li', 'label'];
+            editableTags.forEach(tag => {
+                document.querySelectorAll(tag).forEach(el => {
+                    applyContentToElement(el as HTMLElement);
+                });
+            });
+            console.log('[CMS] Finished initial content application, applied:', appliedElements.current.size, 'elements');
+        }, 100);
+
+        // Observe DOM changes to apply content to newly added elements
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                mutation.addedNodes.forEach((node) => {
+                    if (node.nodeType === Node.ELEMENT_NODE) {
+                        const element = node as HTMLElement;
+                        applyContentToElement(element);
+                        // Also check children
+                        const editableTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span', 'li', 'label'];
+                        editableTags.forEach(tag => {
+                            element.querySelectorAll(tag).forEach(el => {
+                                applyContentToElement(el as HTMLElement);
+                            });
+                        });
+                    }
+                });
+            });
+        });
+
+        observer.observe(document.body, { childList: true, subtree: true });
+
+        return () => {
+            clearTimeout(timeoutId);
+            observer.disconnect();
+        };
+    }, [savedContent]);
 
     // Clear hover styles from an element
     const clearHoverStyles = useCallback((element: HTMLElement | null) => {
@@ -167,31 +364,84 @@ export function GlobalEditMode() {
             setHoveredElement(null);
             
             const rect = target.getBoundingClientRect();
+            const contentKey = generateContentKey(target);
             setEditorState({
                 element: target,
                 originalText: target.textContent || '',
+                contentKey,
                 rect
             });
             setEditText(target.textContent || '');
         }
     }, [isEditMode, isPreviewMode, clearHoverStyles]);
 
-    // Save the edit
+    // Save the edit to localStorage AND database
     const handleSave = useCallback(async () => {
         if (!editorState) return;
         
+        setIsSaving(true);
+        
         const pageName = getPageName();
-        const contentKey = generateContentKey(editorState.element);
+        const storageKey = `cms_content_${pageName}_${currentLanguage}`;
+        
+        console.log('[CMS] Saving content:', {
+            pageName,
+            contentKey: editorState.contentKey,
+            text: editText.slice(0, 50) + '...',
+            language: currentLanguage
+        });
+        
+        // Always save to localStorage first (guaranteed to work)
+        // Store both the new text AND the original text for matching on reload
+        const newSavedContent: SavedContent = {
+            ...savedContent,
+            [editorState.contentKey]: {
+                newText: editText,
+                originalText: editorState.originalText
+            }
+        };
+        localStorage.setItem(storageKey, JSON.stringify(newSavedContent));
+        console.log('[CMS] Saved to localStorage:', {
+            key: editorState.contentKey,
+            original: editorState.originalText.slice(0, 30),
+            new: editText.slice(0, 30)
+        });
         
         // Update the element visually
         editorState.element.textContent = editText;
         
-        // Save to CMS
-        await updateContent(pageName, contentKey, 'text', editText);
+        // Update local saved content cache
+        setSavedContent(newSavedContent);
+        
+        // Mark as applied
+        appliedElements.current.add(editorState.contentKey);
+        
+        // Save to database (so ALL visitors can see changes)
+        try {
+            // Store both newText and originalText as JSON so we can match on reload
+            const contentValue = JSON.stringify({
+                newText: editText,
+                originalText: editorState.originalText
+            });
+            
+            const result = await upsertContent(
+                pageName,
+                editorState.contentKey,
+                'text',
+                contentValue,
+                currentLanguage
+            );
+            console.log('[CMS] Saved to database (visible to all):', result);
+            setToast({ message: 'Content saved! Visible to all visitors.', type: 'success' });
+        } catch (error) {
+            console.log('[CMS] Database save failed:', error);
+            setToast({ message: 'Saved locally only. Run SQL setup for global visibility.', type: 'success' });
+        }
         
         setEditorState(null);
         setEditText('');
-    }, [editorState, editText, updateContent]);
+        setIsSaving(false);
+    }, [editorState, editText, currentLanguage, savedContent]);
 
     // Cancel the edit
     const handleCancel = useCallback(() => {
@@ -214,7 +464,7 @@ export function GlobalEditMode() {
         }
     }, [editorState, handleCancel, handleSave]);
 
-    // Set up event listeners
+    // Set up event listeners for editing (only when in edit mode)
     useEffect(() => {
         if (!canEdit || !isEditMode || isPreviewMode) return;
 
@@ -231,11 +481,41 @@ export function GlobalEditMode() {
         };
     }, [canEdit, isEditMode, isPreviewMode, handleMouseOver, handleMouseOut, handleClick, handleKeyDown]);
 
-    // Don't render anything if not in edit mode
-    if (!canEdit || !isEditMode || isPreviewMode) return null;
+    // Always render (for content loading), but only show edit UI when in edit mode
+    const showEditUI = canEdit && isEditMode && !isPreviewMode;
+    
+    if (!showEditUI) {
+        // Still render nothing visible, but useEffects still run for content loading
+        return null;
+    }
 
     return createPortal(
         <>
+            {/* Toast notification */}
+            {toast && (
+                <div
+                    data-cms-toolbar
+                    style={{
+                        position: 'fixed',
+                        top: 20,
+                        right: 20,
+                        zIndex: 10002,
+                    }}
+                >
+                    <div className={`flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg ${
+                        toast.type === 'success' 
+                            ? 'bg-green-500 text-white' 
+                            : 'bg-red-500 text-white'
+                    }`}>
+                        {toast.type === 'success' 
+                            ? <CheckCircle className="w-5 h-5" />
+                            : <XCircle className="w-5 h-5" />
+                        }
+                        <span className="font-medium">{toast.message}</span>
+                    </div>
+                </div>
+            )}
+            
             {/* Edit indicator on hover */}
             {hoveredElement && !editorState && (
                 <div
@@ -298,22 +578,33 @@ export function GlobalEditMode() {
                         <div className="flex gap-2 justify-end">
                             <button
                                 onClick={handleCancel}
-                                className="px-4 py-2 rounded-lg border border-border hover:bg-muted transition-colors flex items-center gap-2"
+                                disabled={isSaving}
+                                className="px-4 py-2 rounded-lg border border-border hover:bg-muted transition-colors flex items-center gap-2 disabled:opacity-50"
                             >
                                 <X className="w-4 h-4" />
                                 Cancel
                             </button>
                             <button
                                 onClick={handleSave}
-                                className="px-4 py-2 rounded-lg bg-accent text-white hover:bg-accent/90 transition-colors flex items-center gap-2"
+                                disabled={isSaving}
+                                className="px-4 py-2 rounded-lg bg-accent text-white hover:bg-accent/90 transition-colors flex items-center gap-2 disabled:opacity-50"
                             >
-                                <Check className="w-4 h-4" />
-                                Save
+                                {isSaving ? (
+                                    <>
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                        Saving...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Check className="w-4 h-4" />
+                                        Save
+                                    </>
+                                )}
                             </button>
                         </div>
                         
                         <p className="text-xs text-muted-foreground mt-4">
-                            Press Enter to save, Escape to cancel
+                            Press Enter to save, Escape to cancel. Changes are saved permanently.
                         </p>
                     </div>
                 </div>
