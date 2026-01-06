@@ -6,6 +6,7 @@ export interface PageContent {
     content_key: string;
     content_type: 'text' | 'richtext' | 'image' | 'html';
     content_value: string;
+    language_code: string;
     version: number;
     created_at: string;
     updated_at: string;
@@ -66,13 +67,14 @@ export async function getContentByKey(
 }
 
 /**
- * Update or create content
+ * Update or create content with language support
  */
 export async function upsertContent(
     pageName: string,
     contentKey: string,
     contentType: PageContent['content_type'],
-    contentValue: string
+    contentValue: string,
+    languageCode: string = 'en'
 ): Promise<PageContent> {
     const { data: user } = await supabase.auth.getUser();
 
@@ -83,7 +85,10 @@ export async function upsertContent(
             content_key: contentKey,
             content_type: contentType,
             content_value: contentValue,
+            language_code: languageCode,
             created_by: user?.user?.id,
+        }, {
+            onConflict: 'page_name,content_key,language_code'
         })
         .select()
         .single();

@@ -9,13 +9,18 @@ import {
     PageContent,
 } from '@/lib/supabase/content';
 
+// Language preference storage key
+const LANGUAGE_PREFERENCE_KEY = 'directed_language_preference';
+
 interface CMSContextType {
-    isAdmin: boolean;
+    isAdmin: boolean; // Now means "can edit" - any logged-in user
+    canEdit: boolean; // Alias for isAdmin - any logged-in user can edit
     isEditMode: boolean;
     isPreviewMode: boolean;
     currentLanguage: string;
     toggleEditMode: () => void;
     togglePreviewMode: () => void;
+    setLanguage: (langCode: string) => void;
     getContent: (pageName: string, contentKey: string, defaultValue: string) => string;
     updateContent: (
         pageName: string,
@@ -29,6 +34,7 @@ interface CMSContextType {
     discardChanges: () => void;
     hasPendingChanges: boolean;
     loadPageContent: (pageName: string) => Promise<void>;
+    enableEditMode: () => void;
 }
 
 interface PendingChange {
@@ -42,8 +48,8 @@ interface PendingChange {
 const CMSContext = createContext<CMSContextType | undefined>(undefined);
 
 export function CMSProvider({ children }: { children: ReactNode }) {
-    // Allow EVERYONE to edit (not just admin)
-    const isAdmin = true;
+    // Allow any logged-in user to edit (not just admins)
+    const { user } = useAuth();
     const { i18n } = useTranslation();
     const [isEditMode, setIsEditMode] = useState(false);
     const [isPreviewMode, setIsPreviewMode] = useState(false);
@@ -52,16 +58,49 @@ export function CMSProvider({ children }: { children: ReactNode }) {
         new Map()
     );
 
+    // Any logged-in user can edit
+    const canEdit = !!user;
+
     // Get current language from i18n
     const currentLanguage = i18n.language.split('-')[0]; // Get 'en' from 'en-US'
+
+    // Load saved language preference on mount
+    useEffect(() => {
+        const savedLanguage = localStorage.getItem(LANGUAGE_PREFERENCE_KEY);
+        if (savedLanguage && savedLanguage !== i18n.language) {
+            i18n.changeLanguage(savedLanguage);
+        }
+    }, []);
+
+    // Auto-enable edit mode when user logs in
+    useEffect(() => {
+        if (canEdit) {
+            // Automatically enable edit mode for logged-in users
+            // Check localStorage preference, default to enabled
+            const savedEditMode = localStorage.getItem('directed_edit_mode');
+            if (savedEditMode !== 'false') {
+                setIsEditMode(true);
+            }
+        } else {
+            // If user logs out, disable edit mode
+            setIsEditMode(false);
+            setIsPreviewMode(false);
+        }
+    }, [canEdit]);
+
+    // Function to change language and persist preference
+    const setLanguage = (langCode: string) => {
+        i18n.changeLanguage(langCode);
+        localStorage.setItem(LANGUAGE_PREFERENCE_KEY, langCode);
+    };
 
     // Check for edit mode in URL params
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
-        if (params.get('editMode') === 'true') {
+        if (params.get('editMode') === 'true' && canEdit) {
             setIsEditMode(true);
         }
-    }, []);
+    }, [canEdit]);
 
     // Reload content when language changes
     useEffect(() => {
@@ -71,13 +110,25 @@ export function CMSProvider({ children }: { children: ReactNode }) {
     }, [currentLanguage]);
 
     const toggleEditMode = () => {
-        if (!isAdmin) return;
-        setIsEditMode((prev) => !prev);
+        if (!canEdit) return;
+        const newMode = !isEditMode;
+        setIsEditMode(newMode);
         setIsPreviewMode(false);
+        // Save preference
+        localStorage.setItem('directed_edit_mode', String(newMode));
+    };
+
+    const enableEditMode = () => {
+        // Always set localStorage so it persists, and set state if possible
+        localStorage.setItem('directed_edit_mode', 'true');
+        if (canEdit) {
+            setIsEditMode(true);
+            setIsPreviewMode(false);
+        }
     };
 
     const togglePreviewMode = () => {
-        if (!isAdmin || !isEditMode) return;
+        if (!canEdit || !isEditMode) return;
         setIsPreviewMode((prev) => !prev);
     };
 
@@ -182,12 +233,15 @@ export function CMSProvider({ children }: { children: ReactNode }) {
     return (
         <CMSContext.Provider
             value={{
-                isAdmin,
+                isAdmin: canEdit, // Any logged-in user can edit
+                canEdit,
                 isEditMode,
                 isPreviewMode,
                 currentLanguage,
                 toggleEditMode,
                 togglePreviewMode,
+                setLanguage,
+                enableEditMode,
                 getContent,
                 updateContent,
                 uploadImage,

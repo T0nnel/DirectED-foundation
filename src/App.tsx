@@ -27,6 +27,7 @@ import AccessRequests from "./pages/AccessRequests";
 import TestAuth from "./pages/TestAuth";
 import { CMSProvider } from "@/contexts/CMSContext";
 import { AdminToolbar } from "@/components/cms/AdminToolbar";
+import { GlobalEditMode } from "@/components/cms/GlobalEditMode";
 
 const queryClient = new QueryClient();
 
@@ -67,6 +68,10 @@ const App = () => (
                             <Route path="/admin/edit/:id" element={<AdminEdit />} />
                             <Route path="*" element={<NotFound />} />
                         </Routes>
+                        {/* Global Edit Mode - makes all text editable */}
+                        <GlobalEditMode />
+                        {/* Edit Toolbar - shows controls for logged-in users */}
+                        <AdminToolbar />
                     </BrowserRouter>
                 </TooltipProvider>
             </CMSProvider>

@@ -183,6 +183,13 @@ const Index = () => {
           image={content1}
           imagePosition="right"
           cta={{ label: t('mission.cta', "Learn About Our Mission"), href: "/mission" }}
+          pageName="home"
+          contentKeys={{
+            badge: "mission_badge",
+            title: "mission_title",
+            description: "mission_description",
+            image: "mission_image"
+          }}
         />
 
         {/* News Section */}
@@ -202,66 +209,138 @@ const Index = () => {
               className="text-center mb-16"
             >
               <div className="inline-block px-4 py-1.5 bg-[hsl(175_70%_50%/0.2)] rounded-full mb-6">
-                <span className="text-sm font-medium text-[hsl(175_70%_50%)]">{t('features.badge', "Why Choose DirectEd")}</span>
+                <EditableText
+                  pageName="home"
+                  contentKey="features_badge"
+                  defaultValue={t('features.badge', "Why Choose DirectEd")}
+                  as="span"
+                  className="text-sm font-medium text-[hsl(175_70%_50%)]"
+                />
               </div>
-              <h2 className="font-serif text-3xl md:text-4xl font-bold text-primary-foreground mb-4">
-                {t('features.title', "Built for Impact. Designed for Success.")}
-              </h2>
-              <p className="text-lg text-primary-foreground/80 max-w-2xl mx-auto">
-                {t('features.subtitle', "Our comprehensive approach ensures sustainable growth and real-world outcomes")}
-              </p>
+              <EditableText
+                pageName="home"
+                contentKey="features_title"
+                defaultValue={t('features.title', "Built for Impact. Designed for Success.")}
+                as="h2"
+                className="font-serif text-3xl md:text-4xl font-bold text-primary-foreground mb-4"
+              />
+              <EditableText
+                pageName="home"
+                contentKey="features_subtitle"
+                defaultValue={t('features.subtitle', "Our comprehensive approach ensures sustainable growth and real-world outcomes")}
+                as="p"
+                className="text-lg text-primary-foreground/80 max-w-2xl mx-auto"
+              />
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {[
-                {
-                  icon: <Shield className="w-8 h-8" />,
-                  title: t('features.proven_track_record.title', "Proven Track Record"),
-                  description: t('features.proven_track_record.description', "Over 500 students trained with 200+ successful job placements in leading tech companies globally.")
-                },
-                {
-                  icon: <Rocket className="w-8 h-8" />,
-                  title: t('features.comprehensive_training.title', "Comprehensive Training"),
-                  description: t('features.comprehensive_training.description', "From 1-week intro courses to 4-month intensive bootcamps and 8-month paid internships.")
-                },
-                {
-                  icon: <TrendingUp className="w-8 h-8" />,
-                  title: t('features.career_growth.title', "Career Growth"),
-                  description: t('features.career_growth.description', "Direct pathways to employment with US and European companies, bridging the global talent gap.")
-                }
-              ].map((feature, index) => (
-                <motion.div
-                  key={feature.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1, duration: 0.5 }}
-                  className="group relative"
-                >
-                  <div className="relative bg-primary-foreground/5 backdrop-blur-sm rounded-2xl p-8 border border-primary-foreground/10 hover:border-[hsl(175_70%_50%/0.5)] transition-all duration-500 overflow-hidden">
-                    {/* Teal accent gradient on hover */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-[hsl(175_70%_50%/0.05)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-                    <div className="relative z-10">
-                      <motion.div
-                        className="w-14 h-14 rounded-xl bg-[hsl(175_70%_50%/0.15)] flex items-center justify-center text-[hsl(175_70%_50%)] mb-6"
-                        whileHover={{ scale: 1.1, rotate: 5 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                      >
-                        {feature.icon}
-                      </motion.div>
-
-                      <h3 className="font-serif text-2xl font-bold text-primary-foreground mb-4 group-hover:text-[hsl(175_70%_50%)] transition-colors duration-300">
-                        {feature.title}
-                      </h3>
-
-                      <p className="text-primary-foreground/70 leading-relaxed">
-                        {feature.description}
-                      </p>
-                    </div>
+              {/* Feature 1: Proven Track Record */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.1, duration: 0.5 }}
+                className="group relative"
+              >
+                <div className="relative bg-primary-foreground/5 backdrop-blur-sm rounded-2xl p-8 border border-primary-foreground/10 hover:border-[hsl(175_70%_50%/0.5)] transition-all duration-500 overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-[hsl(175_70%_50%/0.05)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="relative z-10">
+                    <motion.div
+                      className="w-14 h-14 rounded-xl bg-[hsl(175_70%_50%/0.15)] flex items-center justify-center text-[hsl(175_70%_50%)] mb-6"
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                    >
+                      <Shield className="w-8 h-8" />
+                    </motion.div>
+                    <EditableText
+                      pageName="home"
+                      contentKey="feature1_title"
+                      defaultValue={t('features.proven_track_record.title', "Proven Track Record")}
+                      as="h3"
+                      className="font-serif text-2xl font-bold text-primary-foreground mb-4 group-hover:text-[hsl(175_70%_50%)] transition-colors duration-300"
+                    />
+                    <EditableText
+                      pageName="home"
+                      contentKey="feature1_desc"
+                      defaultValue={t('features.proven_track_record.description', "Over 500 students trained with 200+ successful job placements in leading tech companies globally.")}
+                      as="p"
+                      className="text-primary-foreground/70 leading-relaxed"
+                    />
                   </div>
-                </motion.div>
-              ))}
+                </div>
+              </motion.div>
+
+              {/* Feature 2: Comprehensive Training */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2, duration: 0.5 }}
+                className="group relative"
+              >
+                <div className="relative bg-primary-foreground/5 backdrop-blur-sm rounded-2xl p-8 border border-primary-foreground/10 hover:border-[hsl(175_70%_50%/0.5)] transition-all duration-500 overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-[hsl(175_70%_50%/0.05)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="relative z-10">
+                    <motion.div
+                      className="w-14 h-14 rounded-xl bg-[hsl(175_70%_50%/0.15)] flex items-center justify-center text-[hsl(175_70%_50%)] mb-6"
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                    >
+                      <Rocket className="w-8 h-8" />
+                    </motion.div>
+                    <EditableText
+                      pageName="home"
+                      contentKey="feature2_title"
+                      defaultValue={t('features.comprehensive_training.title', "Comprehensive Training")}
+                      as="h3"
+                      className="font-serif text-2xl font-bold text-primary-foreground mb-4 group-hover:text-[hsl(175_70%_50%)] transition-colors duration-300"
+                    />
+                    <EditableText
+                      pageName="home"
+                      contentKey="feature2_desc"
+                      defaultValue={t('features.comprehensive_training.description', "From 1-week intro courses to 4-month intensive bootcamps and 8-month paid internships.")}
+                      as="p"
+                      className="text-primary-foreground/70 leading-relaxed"
+                    />
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Feature 3: Career Growth */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3, duration: 0.5 }}
+                className="group relative"
+              >
+                <div className="relative bg-primary-foreground/5 backdrop-blur-sm rounded-2xl p-8 border border-primary-foreground/10 hover:border-[hsl(175_70%_50%/0.5)] transition-all duration-500 overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-[hsl(175_70%_50%/0.05)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="relative z-10">
+                    <motion.div
+                      className="w-14 h-14 rounded-xl bg-[hsl(175_70%_50%/0.15)] flex items-center justify-center text-[hsl(175_70%_50%)] mb-6"
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                    >
+                      <TrendingUp className="w-8 h-8" />
+                    </motion.div>
+                    <EditableText
+                      pageName="home"
+                      contentKey="feature3_title"
+                      defaultValue={t('features.career_growth.title', "Career Growth")}
+                      as="h3"
+                      className="font-serif text-2xl font-bold text-primary-foreground mb-4 group-hover:text-[hsl(175_70%_50%)] transition-colors duration-300"
+                    />
+                    <EditableText
+                      pageName="home"
+                      contentKey="feature3_desc"
+                      defaultValue={t('features.career_growth.description', "Direct pathways to employment with US and European companies, bridging the global talent gap.")}
+                      as="p"
+                      className="text-primary-foreground/70 leading-relaxed"
+                    />
+                  </div>
+                </div>
+              </motion.div>
             </div>
           </div>
         </section>
@@ -277,60 +356,121 @@ const Index = () => {
               className="text-center mb-16"
             >
               <div className="inline-block px-4 py-1.5 bg-accent/10 rounded-full mb-6">
-                <span className="text-sm font-medium text-accent">{t('spotlight.badge', "Spotlight")}</span>
+                <EditableText
+                  pageName="home"
+                  contentKey="spotlight_badge"
+                  defaultValue={t('spotlight.badge', "Spotlight")}
+                  as="span"
+                  className="text-sm font-medium text-accent"
+                />
               </div>
-              <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4">
-                {t('spotlight.title', "Our Focus Areas")}
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                {t('spotlight.subtitle', "Discover the key areas where DirectEd Development Foundation is making an impact")}
-              </p>
+              <EditableText
+                pageName="home"
+                contentKey="spotlight_title"
+                defaultValue={t('spotlight.title', "Our Focus Areas")}
+                as="h2"
+                className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4"
+              />
+              <EditableText
+                pageName="home"
+                contentKey="spotlight_subtitle"
+                defaultValue={t('spotlight.subtitle', "Discover the key areas where DirectEd Development Foundation is making an impact")}
+                as="p"
+                className="text-lg text-muted-foreground max-w-2xl mx-auto"
+              />
               <div className="section-divider mt-6" />
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[
-                {
-                  title: t('spotlight.education.title', "Education & Skills Development"),
-                  description: t('spotlight.education.description', "World-class technology education unlocking potential"),
-                  link: "/focus/education-access",
-                  icon: <GraduationCap className="w-8 h-8" />
-                },
-                {
-                  title: t('spotlight.employment.title', "Youth Employment"),
-                  description: t('spotlight.employment.description', "Connecting talent with global opportunities"),
-                  link: "/focus/youth-employment",
-                  icon: <Briefcase className="w-8 h-8" />
-                },
-                {
-                  title: t('spotlight.gender.title', "Gender Equality in Tech"),
-                  description: t('spotlight.gender.description', "Promoting equal opportunities for women in tech"),
-                  link: "/focus/gender-equality",
-                  icon: <Users className="w-8 h-8" />
-                }
-              ].map((area, index) => (
-                <motion.div
-                  key={area.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  className="bg-card rounded-2xl p-8 shadow-soft hover:shadow-elevated transition-all card-hover"
-                >
-                  <div className="w-16 h-16 rounded-xl bg-accent/10 flex items-center justify-center text-accent mb-6">
-                    {area.icon}
-                  </div>
-                  <h3 className="font-serif text-xl font-bold text-foreground mb-3">
-                    {area.title}
-                  </h3>
-                  <p className="text-muted-foreground mb-6">
-                    {area.description}
-                  </p>
-                  <a href={area.link} className="text-accent font-medium inline-flex items-center gap-2 hover:gap-3 transition-all">
-                    {t('spotlight.explore', "Explore")} <span>→</span>
-                  </a>
-                </motion.div>
-              ))}
+              {/* Focus Area 1: Education */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.1 }}
+                className="bg-card rounded-2xl p-8 shadow-soft hover:shadow-elevated transition-all card-hover"
+              >
+                <div className="w-16 h-16 rounded-xl bg-accent/10 flex items-center justify-center text-accent mb-6">
+                  <GraduationCap className="w-8 h-8" />
+                </div>
+                <EditableText
+                  pageName="home"
+                  contentKey="focus1_title"
+                  defaultValue={t('spotlight.education.title', "Education & Skills Development")}
+                  as="h3"
+                  className="font-serif text-xl font-bold text-foreground mb-3"
+                />
+                <EditableText
+                  pageName="home"
+                  contentKey="focus1_desc"
+                  defaultValue={t('spotlight.education.description', "World-class technology education unlocking potential")}
+                  as="p"
+                  className="text-muted-foreground mb-6"
+                />
+                <a href="/focus/education-access" className="text-accent font-medium inline-flex items-center gap-2 hover:gap-3 transition-all">
+                  {t('spotlight.explore', "Explore")} <span>→</span>
+                </a>
+              </motion.div>
+
+              {/* Focus Area 2: Employment */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2 }}
+                className="bg-card rounded-2xl p-8 shadow-soft hover:shadow-elevated transition-all card-hover"
+              >
+                <div className="w-16 h-16 rounded-xl bg-accent/10 flex items-center justify-center text-accent mb-6">
+                  <Briefcase className="w-8 h-8" />
+                </div>
+                <EditableText
+                  pageName="home"
+                  contentKey="focus2_title"
+                  defaultValue={t('spotlight.employment.title', "Youth Employment")}
+                  as="h3"
+                  className="font-serif text-xl font-bold text-foreground mb-3"
+                />
+                <EditableText
+                  pageName="home"
+                  contentKey="focus2_desc"
+                  defaultValue={t('spotlight.employment.description', "Connecting talent with global opportunities")}
+                  as="p"
+                  className="text-muted-foreground mb-6"
+                />
+                <a href="/focus/youth-employment" className="text-accent font-medium inline-flex items-center gap-2 hover:gap-3 transition-all">
+                  {t('spotlight.explore', "Explore")} <span>→</span>
+                </a>
+              </motion.div>
+
+              {/* Focus Area 3: Gender Equality */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3 }}
+                className="bg-card rounded-2xl p-8 shadow-soft hover:shadow-elevated transition-all card-hover"
+              >
+                <div className="w-16 h-16 rounded-xl bg-accent/10 flex items-center justify-center text-accent mb-6">
+                  <Users className="w-8 h-8" />
+                </div>
+                <EditableText
+                  pageName="home"
+                  contentKey="focus3_title"
+                  defaultValue={t('spotlight.gender.title', "Gender Equality in Tech")}
+                  as="h3"
+                  className="font-serif text-xl font-bold text-foreground mb-3"
+                />
+                <EditableText
+                  pageName="home"
+                  contentKey="focus3_desc"
+                  defaultValue={t('spotlight.gender.description', "Promoting equal opportunities for women in tech")}
+                  as="p"
+                  className="text-muted-foreground mb-6"
+                />
+                <a href="/focus/gender-equality" className="text-accent font-medium inline-flex items-center gap-2 hover:gap-3 transition-all">
+                  {t('spotlight.explore', "Explore")} <span>→</span>
+                </a>
+              </motion.div>
             </div>
           </div>
         </section>
@@ -343,6 +483,13 @@ const Index = () => {
           image={content2}
           imagePosition="left"
           cta={{ label: t('programs.cta', "Explore Our Programs"), href: "/programs" }}
+          pageName="home"
+          contentKeys={{
+            badge: "programs_badge",
+            title: "programs_title",
+            description: "programs_description",
+            image: "programs_image"
+          }}
         >
           <ul className="space-y-3 mb-8">
             <li className="flex items-start gap-3">

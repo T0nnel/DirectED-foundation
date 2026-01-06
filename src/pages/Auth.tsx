@@ -1,17 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
+import { useCMS } from '@/contexts/CMSContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Eye, EyeOff, Leaf } from 'lucide-react';
+import { Eye, EyeOff, Leaf, Shield } from 'lucide-react';
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [justLoggedIn, setJustLoggedIn] = useState(false);
 
   // Login form state
   const [loginEmail, setLoginEmail] = useState('');
@@ -22,15 +24,37 @@ const Auth = () => {
   const [signupEmail, setSignupEmail] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
 
-  const { user, signIn, signUp } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
+  const { signIn, signUp } = useAuth();
+  const { enableEditMode } = useCMS();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const hasRedirected = useRef(false);
 
+  // Redirect after login - enable edit mode for any logged-in user
   useEffect(() => {
+    // Wait for auth to finish loading
+    if (authLoading) return;
+    
+    // Only redirect once
+    if (hasRedirected.current) return;
+    
     if (user) {
-      navigate('/'); // Redirect to home when logged in
+      hasRedirected.current = true;
+      
+      // Enable edit mode for any logged-in user
+      enableEditMode();
+      
+      if (justLoggedIn) {
+        toast({
+          title: 'Welcome! ✏️',
+          description: 'Edit mode is enabled. Hover over any text or image to edit it.',
+        });
+      }
+      
+      navigate('/');
     }
-  }, [user, navigate]);
+  }, [user, authLoading, navigate, enableEditMode, toast, justLoggedIn]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,6 +69,7 @@ const Auth = () => {
     }
 
     setIsSubmitting(true);
+    hasRedirected.current = false; // Reset for new login attempt
     const { error } = await signIn(loginEmail, loginPassword);
     setIsSubmitting(false);
 
@@ -55,11 +80,8 @@ const Auth = () => {
         variant: 'destructive',
       });
     } else {
-      toast({
-        title: 'Welcome back!',
-        description: 'You have successfully logged in.',
-      });
-      navigate('/');
+      setJustLoggedIn(true);
+      // Don't navigate here - let useEffect handle it after admin check completes
     }
   };
 

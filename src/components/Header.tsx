@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Menu, X, Search, Globe, User, LogOut, LogIn, Edit3, Save } from "lucide-react";
+import { ChevronDown, Menu, X, Search, Globe, User, LogOut, LogIn, Edit3, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logoImage from "@/assets/Facebook profile-01.jpg";
 import { useTranslation } from "react-i18next";
@@ -17,7 +17,7 @@ interface NavItem {
 
 export const Header = () => {
   const { t, i18n } = useTranslation();
-  const { user, isAdmin, signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const { isEditMode, toggleEditMode, setLanguage } = useCMS();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -89,7 +89,7 @@ export const Header = () => {
   ];
 
   const handleLanguageChange = (langCode: string) => {
-    i18n.changeLanguage(langCode);
+    setLanguage(langCode);
     setIsLanguageDropdownOpen(false);
   };
 
@@ -154,12 +154,8 @@ export const Header = () => {
                   {languages.map((lang) => (
                     <button
                       key={lang.code}
-                      onClick={() => {
-                        handleLanguageChange(lang.code);
-                        // Also update CMS context
-                        setLanguage(lang.code);
-                      }}
-                      className={`w-full text-left px-4 py-2.5 hover:bg-accent hover:text-accent-foreground transition-colors ${i18n.language === lang.code ? 'bg-muted font-medium' : ''
+                      onClick={() => handleLanguageChange(lang.code)}
+                      className={`w-full text-left px-4 py-2.5 hover:bg-accent hover:text-accent-foreground transition-colors ${i18n.language === lang.code || i18n.language.startsWith(lang.code) ? 'bg-muted font-medium' : ''
                         }`}
                     >
                       {lang.name}
@@ -178,8 +174,8 @@ export const Header = () => {
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                   className="flex items-center gap-2 hover:text-accent transition-colors"
                 >
-                  <div className="w-6 h-6 rounded-full bg-accent flex items-center justify-center">
-                    <User className="w-4 h-4" />
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center ${isEditMode ? 'bg-accent' : 'bg-muted'}`}>
+                    {isEditMode ? <Pencil className="w-3 h-3" /> : <User className="w-4 h-4" />}
                   </div>
                   <span className="hidden sm:inline">{user.email?.split('@')[0]}</span>
                   <ChevronDown className={`w-3 h-3 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
@@ -196,27 +192,27 @@ export const Header = () => {
                     >
                       <div className="px-4 py-3 border-b border-border">
                         <p className="text-sm font-medium">{user.email}</p>
-                        {isAdmin && <p className="text-xs text-accent mt-1">Admin</p>}
+                        {isEditMode && (
+                          <p className="text-xs text-accent mt-1 flex items-center gap-1">
+                            <Pencil className="w-3 h-3" /> Edit Mode Active
+                          </p>
+                        )}
                       </div>
 
-                      {/* Admin CMS Controls */}
-                      {isAdmin && (
-                        <>
-                          <button
-                            onClick={() => {
-                              toggleEditMode();
-                              setIsUserMenuOpen(false);
-                            }}
-                            className={`w-full text-left px-4 py-2.5 hover:bg-accent hover:text-accent-foreground transition-colors flex items-center gap-2 ${isEditMode ? 'bg-accent/10 text-accent font-medium' : ''
-                              }`}
-                          >
-                            <Edit3 className="w-4 h-4" />
-                            {isEditMode ? 'Edit Mode: ON' : 'Edit Mode: OFF'}
-                          </button>
+                      {/* CMS Edit Controls - Available to all logged-in users */}
+                      <button
+                        onClick={() => {
+                          toggleEditMode();
+                          setIsUserMenuOpen(false);
+                        }}
+                        className={`w-full text-left px-4 py-2.5 hover:bg-accent hover:text-accent-foreground transition-colors flex items-center gap-2 ${isEditMode ? 'bg-accent/10 text-accent font-medium' : ''
+                          }`}
+                      >
+                        <Edit3 className="w-4 h-4" />
+                        {isEditMode ? 'Edit Mode: ON' : 'Edit Mode: OFF'}
+                      </button>
 
-                          <div className="h-px bg-border my-1" />
-                        </>
-                      )}
+                      <div className="h-px bg-border my-1" />
 
                       <button
                         onClick={() => navigate('/test-auth')}
@@ -236,7 +232,15 @@ export const Header = () => {
                   )}
                 </AnimatePresence>
               </>
-            ) : null}
+            ) : (
+              <Link
+                to="/auth"
+                className="flex items-center gap-2 hover:text-accent transition-colors"
+              >
+                <LogIn className="w-4 h-4" />
+                <span>{t('nav.login', 'Login')}</span>
+              </Link>
+            )}
           </div>
         </div>
       </div>
