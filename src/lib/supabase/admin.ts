@@ -2,10 +2,9 @@ import { supabase } from '@/integrations/supabase/client';
 
 export interface UserRole {
     id: string;
-    role: 'admin' | 'user';
-    full_name: string | null;
+    user_id: string;
+    role: 'admin' | 'user' | 'moderator';
     created_at: string;
-    updated_at: string;
 }
 
 /**
@@ -66,15 +65,14 @@ export async function getUserRole(userId?: string): Promise<UserRole | null> {
  */
 export async function setUserRole(
     userId: string,
-    role: 'admin' | 'user',
-    fullName?: string
+    role: 'admin' | 'user' | 'moderator'
 ): Promise<UserRole> {
     const { data, error } = await supabase
         .from('user_roles')
         .upsert({
             id: userId,
+            user_id: userId,
             role,
-            full_name: fullName,
         })
         .select()
         .single();
@@ -110,15 +108,14 @@ export async function getAllUsers(): Promise<UserRole[]> {
  */
 export async function createUserRole(
     userId: string,
-    fullName?: string,
-    role: 'admin' | 'user' = 'user'
+    role: 'admin' | 'user' | 'moderator' = 'user'
 ): Promise<UserRole> {
     const { data, error } = await supabase
         .from('user_roles')
         .insert({
             id: userId,
+            user_id: userId,
             role,
-            full_name: fullName,
         })
         .select()
         .single();

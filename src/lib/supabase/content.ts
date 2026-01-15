@@ -38,7 +38,7 @@ export async function fetchPageContent(pageName: string, languageCode: string = 
         throw error;
     }
 
-    return data || [];
+    return (data as unknown as PageContent[]) || [];
 }
 
 /**
@@ -63,7 +63,7 @@ export async function getContentByKey(
         throw error;
     }
 
-    return data;
+    return data as unknown as PageContent;
 }
 
 /**
@@ -98,7 +98,7 @@ export async function upsertContent(
         throw error;
     }
 
-    return data;
+    return data as unknown as PageContent;
 }
 
 /**
@@ -121,7 +121,7 @@ export async function bulkUpdateContent(
 
     const { data, error } = await supabase
         .from('page_content')
-        .upsert(contentWithUser)
+        .upsert(contentWithUser as any)
         .select();
 
     if (error) {
@@ -129,7 +129,7 @@ export async function bulkUpdateContent(
         throw error;
     }
 
-    return data || [];
+    return (data as unknown as PageContent[]) || [];
 }
 
 /**
@@ -147,7 +147,7 @@ export async function getContentHistory(contentId: string): Promise<ContentHisto
         throw error;
     }
 
-    return data || [];
+    return (data as unknown as ContentHistory[]) || [];
 }
 
 /**
@@ -182,7 +182,7 @@ export async function restoreContentVersion(
         throw error;
     }
 
-    return data;
+    return data as unknown as PageContent;
 }
 
 /**
@@ -249,7 +249,7 @@ export async function getAllEditableContent(): Promise<
 
     // Group by page name
     const grouped: Record<string, PageContent[]> = {};
-    data?.forEach((item) => {
+    (data as unknown as PageContent[])?.forEach((item) => {
         if (!grouped[item.page_name]) {
             grouped[item.page_name] = [];
         }

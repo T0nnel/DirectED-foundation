@@ -14,8 +14,8 @@ export default {
         },
         extend: {
             fontFamily: {
-                sans: ['DM Sans', 'sans-serif'],
-                serif: ['Playfair Display', 'serif'],
+                sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+                serif: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
             },
             colors: {
                 border: "hsl(var(--border))",
