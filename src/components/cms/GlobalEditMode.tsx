@@ -7,12 +7,12 @@ import { upsertContent, fetchPageContent, PageContent } from '@/lib/supabase/con
 // Generate a stable content key from element's position in the DOM (NO text-based hash)
 function generateContentKey(element: HTMLElement): string {
     const tag = element.tagName.toLowerCase();
-    
+
     // Create a stable path from element to body
     const pathParts: string[] = [];
     let current: HTMLElement | null = element;
     let depth = 0;
-    
+
     while (current && current !== document.body && depth < 8) {
         const parent = current.parentElement;
         if (parent) {
@@ -28,7 +28,7 @@ function generateContentKey(element: HTMLElement): string {
         current = parent;
         depth++;
     }
-    
+
     // Create a stable key based purely on DOM position
     const path = pathParts.join('_');
     return `global_${tag}_${path}`.replace(/[^a-zA-Z0-9_]/g, '_').slice(0, 100);
@@ -47,86 +47,86 @@ function isExcludedElement(element: HTMLElement): boolean {
     if (element.closest('[data-cms-toolbar]') || element.closest('[data-cms-editor]')) {
         return true;
     }
-    
+
     // Skip if it's inside the admin toolbar / edit controls
     if (element.closest('[data-cms-admin-toolbar]')) {
         return true;
     }
-    
+
     // Skip if it's inside the user menu / profile dropdown
     if (element.closest('[data-user-menu]')) {
         return true;
     }
-    
+
     // Skip if it's inside the language dropdown
     if (element.closest('[data-language-dropdown]')) {
         return true;
     }
-    
+
     // Skip if it's inside any dropdown or popover
     if (element.closest('[role="menu"]') || element.closest('[role="listbox"]') || element.closest('[role="dialog"]')) {
         return true;
     }
-    
+
     // Skip header top bar (contains user menu and language switcher)
     if (element.closest('.bg-primary.text-primary-foreground.text-sm.py-2')) {
         return true;
     }
-    
+
     // Skip navigation dropdowns
     if (element.closest('nav') && element.closest('[class*="absolute"]')) {
         return true;
     }
-    
+
     // Skip the hero carousel - it's not editable
     if (element.closest('[data-hero-carousel]')) {
         return true;
     }
-    
+
     return false;
 }
 
 // Check if element is a text element that should be editable
 function isEditableTextElement(element: HTMLElement): boolean {
     const editableTags = ['H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'P', 'SPAN', 'LI', 'LABEL'];
-    
+
     // Check exclusions first
     if (isExcludedElement(element)) {
         return false;
     }
-    
+
     // Skip if it's an input or textarea
     if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
         return false;
     }
-    
+
     // Skip buttons and links - they should navigate, not be edited
     if (element.tagName === 'A' || element.tagName === 'BUTTON') {
         return false;
     }
-    
+
     // Skip if inside a button or link
     if (element.closest('a') || element.closest('button')) {
         return false;
     }
-    
+
     // Check if it's a text element
     if (!editableTags.includes(element.tagName)) {
         return false;
     }
-    
+
     // Must have some text content
     const text = element.textContent?.trim();
     if (!text || text.length < 2) {
         return false;
     }
-    
+
     // Skip if element has too many child elements (likely a container)
     const childElements = element.querySelectorAll('*');
     if (childElements.length > 5) {
         return false;
     }
-    
+
     return true;
 }
 
@@ -155,7 +155,7 @@ export function GlobalEditMode() {
     const [isSaving, setIsSaving] = useState(false);
     const [savedContent, setSavedContent] = useState<SavedContent>({});
     const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
-    
+
     // Auto-hide toast after 3 seconds
     useEffect(() => {
         if (toast) {
@@ -169,43 +169,45 @@ export function GlobalEditMode() {
         const loadSavedContent = async () => {
             const pageName = getPageName();
             const storageKey = `cms_content_${pageName}_${currentLanguage}`;
-            
+
             // Loading saved content silently
-            
+
             let contentMap: SavedContent = {};
-            
+
             // First, try to load from database (visible to ALL visitors)
             try {
                 const content = await fetchPageContent(pageName, currentLanguage);
                 // Loaded from database
-                
+
                 content.forEach((item: PageContent) => {
                     if (item.content_key.startsWith('global_')) {
-                        // Database stores: content_key contains original text hash
-                        // content_value is the new text
-                        // We need to also store original text - check if it's JSON
+                        // NEW: Store plain text, not JSON
+                        // For backward compatibility, try to parse old nested JSON
+                        let newText = item.content_value;
+                        let originalText = '';
+
+                        // Handle old nested JSON format for backward compatibility
                         try {
                             const parsed = JSON.parse(item.content_value);
-                            if (parsed.newText && parsed.originalText) {
-                                contentMap[item.content_key] = parsed;
-                            } else {
-                                contentMap[item.content_key] = { 
-                                    newText: item.content_value, 
-                                    originalText: '' 
-                                };
+                            if (parsed.newText) {
+                                newText = parsed.newText;
+                                originalText = parsed.originalText || '';
                             }
                         } catch {
-                            contentMap[item.content_key] = { 
-                                newText: item.content_value, 
-                                originalText: '' 
-                            };
+                            // Not JSON, use as-is (plain text)
+                            newText = item.content_value;
                         }
+
+                        contentMap[item.content_key] = {
+                            newText,
+                            originalText
+                        };
                     }
                 });
             } catch (error) {
                 // Database not available, will use localStorage
             }
-            
+
             // Fallback: load from localStorage if database didn't have content
             if (Object.keys(contentMap).length === 0) {
                 const localContent = localStorage.getItem(storageKey);
@@ -225,7 +227,7 @@ export function GlobalEditMode() {
                     }
                 }
             }
-            
+
             setSavedContent(contentMap);
         };
 
@@ -235,7 +237,7 @@ export function GlobalEditMode() {
     // Apply saved content to DOM elements
     useEffect(() => {
         if (Object.keys(savedContent).length === 0) return;
-        
+
         // Create a map of original text → saved entry for quick matching
         const originalTextMap = new Map<string, { key: string; entry: SavedContentEntry }>();
         Object.entries(savedContent).forEach(([key, entry]) => {
@@ -243,31 +245,31 @@ export function GlobalEditMode() {
                 originalTextMap.set(entry.originalText.trim(), { key, entry });
             }
         });
-        
+
         // Track which actual DOM elements have been processed (using WeakSet for memory efficiency)
         const processedElements = new WeakSet<HTMLElement>();
 
         const applyContentToElement = (element: HTMLElement, animate: boolean = true) => {
             // Skip if this exact DOM element was already processed
             if (processedElements.has(element)) return;
-            
+
             // Skip hero carousel - it's handled by Index.tsx via React state
             if (element.closest('[data-hero-carousel]')) return;
-            
+
             if (!isEditableTextElement(element)) return;
-            
+
             const currentText = element.textContent?.trim() || '';
-            
+
             // Try to match by original text
             const match = originalTextMap.get(currentText);
             if (match) {
                 processedElements.add(element);
-                
+
                 if (animate) {
                     // Smooth transition for initial load
                     element.style.transition = 'opacity 0.15s ease-in-out';
                     element.style.opacity = '0';
-                    
+
                     requestAnimationFrame(() => {
                         element.textContent = match.entry.newText;
                         requestAnimationFrame(() => {
@@ -284,16 +286,16 @@ export function GlobalEditMode() {
                 }
                 return;
             }
-            
+
             // Also try matching by key (for backward compatibility)
             const contentKey = generateContentKey(element);
             if (savedContent[contentKey]?.newText) {
                 processedElements.add(element);
-                
+
                 if (animate) {
                     element.style.transition = 'opacity 0.15s ease-in-out';
                     element.style.opacity = '0';
-                    
+
                     requestAnimationFrame(() => {
                         element.textContent = savedContent[contentKey].newText;
                         requestAnimationFrame(() => {
@@ -309,7 +311,7 @@ export function GlobalEditMode() {
                 }
             }
         };
-        
+
         // Apply content quickly after page loads
         const timeoutId = setTimeout(() => {
             const editableTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span', 'li', 'label'];
@@ -328,7 +330,7 @@ export function GlobalEditMode() {
                         const element = node as HTMLElement;
                         // For dynamically added elements, apply without animation
                         applyContentToElement(element, false);
-                        
+
                         // Also check all children
                         const editableTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span', 'li', 'label'];
                         editableTags.forEach(tag => {
@@ -363,9 +365,9 @@ export function GlobalEditMode() {
     // Handle mouse over to show edit indicator
     const handleMouseOver = useCallback((e: MouseEvent) => {
         if (!isEditMode || isPreviewMode || editorState) return;
-        
+
         const target = e.target as HTMLElement;
-        
+
         // Check if it's an editable text element
         if (isEditableTextElement(target)) {
             setHoveredElement(target);
@@ -388,17 +390,17 @@ export function GlobalEditMode() {
     // Handle click to open editor
     const handleClick = useCallback((e: MouseEvent) => {
         if (!isEditMode || isPreviewMode) return;
-        
+
         const target = e.target as HTMLElement;
-        
+
         // Check if it's an editable text element
         if (isEditableTextElement(target)) {
             e.preventDefault();
             e.stopPropagation();
-            
+
             clearHoverStyles(target);
             setHoveredElement(null);
-            
+
             const rect = target.getBoundingClientRect();
             const contentKey = generateContentKey(target);
             setEditorState({
@@ -414,12 +416,12 @@ export function GlobalEditMode() {
     // Save the edit to localStorage AND database
     const handleSave = useCallback(async () => {
         if (!editorState) return;
-        
+
         setIsSaving(true);
-        
+
         const pageName = getPageName();
         const storageKey = `cms_content_${pageName}_${currentLanguage}`;
-        
+
         // Read existing content from localStorage to ensure we don't lose previous edits
         let existingContent: SavedContent = {};
         try {
@@ -435,7 +437,7 @@ export function GlobalEditMode() {
         } catch (e) {
             // Ignore parse errors
         }
-        
+
         // Merge with new content (always preserves previous edits)
         const newSavedContent: SavedContent = {
             ...existingContent,
@@ -445,36 +447,32 @@ export function GlobalEditMode() {
             }
         };
         localStorage.setItem(storageKey, JSON.stringify(newSavedContent));
-        
+
         // Dispatch custom event so other components can reload content (e.g., Index.tsx for hero carousel)
         window.dispatchEvent(new CustomEvent('cms-content-saved'));
-        
+
         // Update the element visually
         editorState.element.textContent = editText;
-        
+
         // Update local saved content cache
         setSavedContent(newSavedContent);
-        
+
         // Save to database (so ALL visitors can see changes)
         try {
-            // Store both newText and originalText as JSON so we can match on reload
-            const contentValue = JSON.stringify({
-                newText: editText,
-                originalText: editorState.originalText
-            });
-            
+            // FIX: Save ONLY the plain text value, not a JSON object
+            // This prevents JSON nesting issues
             const result = await upsertContent(
                 pageName,
                 editorState.contentKey,
                 'text',
-                contentValue,
+                editText,  // Save plain text directly
                 currentLanguage
             );
             setToast({ message: 'Content saved!', type: 'success' });
         } catch (error) {
             setToast({ message: 'Saved locally', type: 'success' });
         }
-        
+
         setEditorState(null);
         setEditText('');
         setIsSaving(false);
@@ -489,7 +487,7 @@ export function GlobalEditMode() {
     // Handle keyboard shortcuts
     const handleKeyDown = useCallback((e: KeyboardEvent) => {
         if (!editorState) return;
-        
+
         if (e.key === 'Escape') {
             handleCancel();
         } else if (e.key === 'Enter' && !e.shiftKey) {
@@ -520,7 +518,7 @@ export function GlobalEditMode() {
 
     // Always render (for content loading), but only show edit UI when in edit mode
     const showEditUI = canEdit && isEditMode && !isPreviewMode;
-    
+
     if (!showEditUI) {
         // Still render nothing visible, but useEffects still run for content loading
         return null;
@@ -539,12 +537,11 @@ export function GlobalEditMode() {
                         zIndex: 10002,
                     }}
                 >
-                    <div className={`flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg ${
-                        toast.type === 'success' 
-                            ? 'bg-green-500 text-white' 
+                    <div className={`flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg ${toast.type === 'success'
+                            ? 'bg-green-500 text-white'
                             : 'bg-red-500 text-white'
-                    }`}>
-                        {toast.type === 'success' 
+                        }`}>
+                        {toast.type === 'success'
                             ? <CheckCircle className="w-5 h-5" />
                             : <XCircle className="w-5 h-5" />
                         }
@@ -552,7 +549,7 @@ export function GlobalEditMode() {
                     </div>
                 </div>
             )}
-            
+
             {/* Edit indicator on hover */}
             {hoveredElement && !editorState && (
                 <div
@@ -598,7 +595,7 @@ export function GlobalEditMode() {
                             <Pencil className="w-5 h-5 text-accent" />
                             <h3 className="font-semibold text-lg">Edit Text</h3>
                         </div>
-                        
+
                         <div className="mb-4">
                             <label className="text-sm text-muted-foreground mb-2 block">
                                 Original: "{editorState.originalText.slice(0, 100)}..."
@@ -611,7 +608,7 @@ export function GlobalEditMode() {
                                 autoFocus
                             />
                         </div>
-                        
+
                         <div className="flex gap-2 justify-end">
                             <button
                                 onClick={handleCancel}
@@ -639,7 +636,7 @@ export function GlobalEditMode() {
                                 )}
                             </button>
                         </div>
-                        
+
                         <p className="text-xs text-muted-foreground mt-4">
                             Press Enter to save, Escape to cancel. Changes are saved permanently.
                         </p>
