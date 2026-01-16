@@ -234,6 +234,55 @@ export function GlobalEditMode() {
         loadSavedContent();
     }, [currentLanguage]);
 
+    // REAL-TIME SYNC: Listen for content save events and reload content
+    // This ensures content updates appear immediately across all pages
+    useEffect(() => {
+        const handleContentSaved = () => {
+            // Reload content when any content is saved anywhere in the app
+            const loadSavedContent = async () => {
+                const pageName = getPageName();
+                let contentMap: SavedContent = {};
+
+                try {
+                    const content = await fetchPageContent(pageName, currentLanguage);
+                    content.forEach((item: PageContent) => {
+                        if (item.content_key.startsWith('global_')) {
+                            let newText = item.content_value;
+                            let originalText = '';
+
+                            // Handle old nested JSON format
+                            try {
+                                const parsed = JSON.parse(item.content_value);
+                                if (parsed.newText) {
+                                    newText = parsed.newText;
+                                    originalText = parsed.originalText || '';
+                                }
+                            } catch {
+                                // Plain text
+                                newText = item.content_value;
+                            }
+
+                            contentMap[item.content_key] = { newText, originalText };
+                        }
+                    });
+
+                    setSavedContent(contentMap);
+                } catch (error) {
+                    console.error('[CMS] Error reloading content:', error);
+                }
+            };
+
+            loadSavedContent();
+        };
+
+        // Listen for content saved events from anywhere in the app
+        window.addEventListener('cms-content-saved', handleContentSaved);
+
+        return () => {
+            window.removeEventListener('cms-content-saved', handleContentSaved);
+        };
+    }, [currentLanguage]);
+
     // Apply saved content to DOM elements
     useEffect(() => {
         if (Object.keys(savedContent).length === 0) return;
@@ -516,12 +565,15 @@ export function GlobalEditMode() {
         };
     }, [canEdit, isEditMode, isPreviewMode, handleMouseOver, handleMouseOut, handleClick, handleKeyDown]);
 
-    // Always render (for content loading), but only show edit UI when in edit mode
+    // CRITICAL FIX: Always render so useEffects run for content loading
+    // Content must be loaded and applied for ALL visitors (logged in or not, edit mode or not)
+    // Only conditionally render the edit UI portal
     const showEditUI = canEdit && isEditMode && !isPreviewMode;
 
+    // If not showing edit UI, return empty fragment (not null)
+    // This allows useEffects to still run and load/apply content
     if (!showEditUI) {
-        // Still render nothing visible, but useEffects still run for content loading
-        return null;
+        return <></>;
     }
 
     return createPortal(
@@ -538,8 +590,8 @@ export function GlobalEditMode() {
                     }}
                 >
                     <div className={`flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg ${toast.type === 'success'
-                            ? 'bg-green-500 text-white'
-                            : 'bg-red-500 text-white'
+                        ? 'bg-green-500 text-white'
+                        : 'bg-red-500 text-white'
                         }`}>
                         {toast.type === 'success'
                             ? <CheckCircle className="w-5 h-5" />

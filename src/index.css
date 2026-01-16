@@ -6,6 +6,14 @@
 
 @layer base {
     :root {
+        /* iOS Safari safe area support */
+        --safe-area-inset-top: env(safe-area-inset-top, 0px);
+        --safe-area-inset-right: env(safe-area-inset-right, 0px);
+        --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+        --safe-area-inset-left: env(safe-area-inset-left, 0px);
+
+        /* Fix for iOS Safari viewport height issues */
+        --vh: 1vh;
         /* DirectEd inspired green palette with cream backgrounds */
         --background: 40 35% 96%;
         /* Warm cream instead of white */
@@ -144,6 +152,21 @@
         font-weight: 400;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+
+        /* iOS Safari specific fixes */
+        -webkit-text-size-adjust: 100%;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+
+        /* Handle safe area for iOS devices */
+        padding-top: var(--safe-area-inset-top);
+        padding-bottom: var(--safe-area-inset-bottom);
+        padding-left: var(--safe-area-inset-left);
+        padding-right: var(--safe-area-inset-right);
+
+        /* iOS momentum scrolling */
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: none;
     }
 
     h1,
@@ -217,25 +240,36 @@
     .card-hover {
         transition: all var(--transition-smooth);
         @apply hover:shadow-elevated;
+        /* iOS Safari performance */
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+        will-change: transform, box-shadow;
     }
 
     .card-hover:hover {
-        transform: translateY(-6px) scale(1.005);
+        transform: translateY(-6px) scale(1.005) translateZ(0);
+        -webkit-transform: translateY(-6px) scale(1.005) translateZ(0);
     }
 
     /* Button enhancements */
     .btn-enhanced {
         transition: all var(--transition-base);
         @apply font-medium;
+        /* iOS Safari performance */
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
     }
 
     .btn-enhanced:hover {
-        transform: translateY(-2px) scale(1.02);
+        transform: translateY(-2px) scale(1.02) translateZ(0);
+        -webkit-transform: translateY(-2px) scale(1.02) translateZ(0);
         filter: brightness(1.05);
+        -webkit-filter: brightness(1.05);
     }
 
     .btn-enhanced:active {
-        transform: translateY(0) scale(0.98);
+        transform: translateY(0) scale(0.98) translateZ(0);
+        -webkit-transform: translateY(0) scale(0.98) translateZ(0);
     }
 
     /* Section divider */
@@ -255,6 +289,20 @@
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
         border: 1px solid hsl(var(--border) / 0.3);
+        /* iOS Safari performance optimization */
+        will-change: transform;
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+    }
+
+    /* iOS Safari button fix */
+    button,
+    input,
+    select,
+    textarea {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
     }
 }
 
@@ -336,23 +384,27 @@
 /* Animation keyframes */
 @keyframes kenBurns {
     0% {
-        transform: scale(1);
+        transform: scale(1) translateZ(0);
+        -webkit-transform: scale(1) translateZ(0);
     }
 
     100% {
-        transform: scale(1.12);
+        transform: scale(1.12) translateZ(0);
+        -webkit-transform: scale(1.12) translateZ(0);
     }
 }
 
 @keyframes fadeUp {
     from {
         opacity: 0;
-        transform: translateY(30px);
+        transform: translateY(30px) translateZ(0);
+        -webkit-transform: translateY(30px) translateZ(0);
     }
 
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) translateZ(0);
+        -webkit-transform: translateY(0) translateZ(0);
     }
 }
 
@@ -369,24 +421,28 @@
 @keyframes slideIn {
     from {
         opacity: 0;
-        transform: translateX(-20px);
+        transform: translateX(-20px) translateZ(0);
+        -webkit-transform: translateX(-20px) translateZ(0);
     }
 
     to {
         opacity: 1;
-        transform: translateX(0);
+        transform: translateX(0) translateZ(0);
+        -webkit-transform: translateX(0) translateZ(0);
     }
 }
 
 @keyframes scaleIn {
     from {
         opacity: 0;
-        transform: scale(0.95);
+        transform: scale(0.95) translateZ(0);
+        -webkit-transform: scale(0.95) translateZ(0);
     }
 
     to {
         opacity: 1;
-        transform: scale(1);
+        transform: scale(1) translateZ(0);
+        -webkit-transform: scale(1) translateZ(0);
     }
 }
 
@@ -394,11 +450,13 @@
 
     0%,
     100% {
-        transform: translateY(0);
+        transform: translateY(0) translateZ(0);
+        -webkit-transform: translateY(0) translateZ(0);
     }
 
     50% {
-        transform: translateY(-10px);
+        transform: translateY(-10px) translateZ(0);
+        -webkit-transform: translateY(-10px) translateZ(0);
     }
 }
 
@@ -410,6 +468,14 @@
 /* Smooth scroll behavior */
 html {
     scroll-behavior: smooth;
+    /* Fix for iOS Safari 100vh issues */
+    height: -webkit-fill-available;
+}
+
+body {
+    min-height: 100vh;
+    /* Fix for iOS Safari viewport height */
+    min-height: -webkit-fill-available;
 }
 
 /* Custom scrollbar with enhanced styling */
