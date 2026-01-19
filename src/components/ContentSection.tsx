@@ -110,7 +110,7 @@ export const ContentSection = ({
             )}
             {children}
             {cta && (
-              <Button variant="accent" size="lg">
+              <Button variant="teal" size="lg">
                 {cta.label}
               </Button>
             )}
@@ -156,3 +156,4 @@ export const ContentSection = ({
     </section>
   );
 };
+
