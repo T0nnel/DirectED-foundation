@@ -116,7 +116,7 @@ export const HeroCarousel = ({ slides }: HeroCarouselProps) => {
               <Link to={slides[currentSlide].link}>
                 <Button
                   size="lg"
-                  variant="accent"
+                  variant="teal"
                   className="text-lg px-8 py-6"
                 >
                   {slides[currentSlide].cta}
@@ -130,14 +130,14 @@ export const HeroCarousel = ({ slides }: HeroCarouselProps) => {
       {/* Navigation Arrows */}
       <button
         onClick={prevSlide}
-        className="absolute left-6 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/20 transition-all duration-300"
+        className="absolute left-6 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-[hsl(175_70%_50%)]/20 backdrop-blur-sm border border-[hsl(175_70%_50%)]/40 text-[hsl(175_70%_50%)] hover:bg-[hsl(175_70%_50%)]/30 transition-all duration-300"
         aria-label="Previous slide"
       >
         <ChevronLeft className="w-6 h-6" />
       </button>
       <button
         onClick={nextSlide}
-        className="absolute right-6 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-primary-foreground/10 backdrop-blur-sm border border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/20 transition-all duration-300"
+        className="absolute right-6 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-[hsl(175_70%_50%)]/20 backdrop-blur-sm border border-[hsl(175_70%_50%)]/40 text-[hsl(175_70%_50%)] hover:bg-[hsl(175_70%_50%)]/30 transition-all duration-300"
         aria-label="Next slide"
       >
         <ChevronRight className="w-6 h-6" />
@@ -160,3 +160,4 @@ export const HeroCarousel = ({ slides }: HeroCarouselProps) => {
     </section>
   );
 };
+
